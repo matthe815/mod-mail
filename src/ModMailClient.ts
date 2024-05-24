@@ -88,19 +88,19 @@ export default class ModMailClient extends Client {
         const seconds = duration.seconds;
 
         // Build the formatted string
-        let formattedString = '';
+        let formattedString = [];
         if (hours > 0) {
-            formattedString += `${hours} ${hours === 1 ? 'hour' : 'hours'}`;
+            formattedString.push(`${hours} ${hours === 1 ? 'hour' : 'hours'}`);
         }
         if (minutes > 0) {
-            formattedString += `${minutes} ${minutes === 1 ? 'minute' : 'minutes'}`;
+            formattedString.push(`${minutes} ${minutes === 1 ? 'minute' : 'minutes'}`);
         }
         if (seconds > 0) {
-            formattedString += `${seconds} ${seconds === 1 ? 'minute' : 'minutes'}`;
+            formattedString.push(`${seconds} ${seconds === 1 ? 'seconds' : 'seconds'}`);
         }
 
         // Return the formatted string
-        return formattedString;
+        return formattedString.join(" ");
     }
 
     public async handleInteraction(interaction: Interaction): Promise<ModMail | undefined> {
