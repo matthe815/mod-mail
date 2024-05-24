@@ -51,9 +51,6 @@ web_modules/
 # Optional npm cache directory
 .npm
 
-# Exclude the config
-.config/config.json
-
 # Optional eslint cache
 .eslintcache
 
@@ -131,5 +128,5 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
-config/config-test.json
+config/default.json
 config/config.json
