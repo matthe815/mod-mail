@@ -11,7 +11,7 @@ import ModMailManager from "./mail/ModMailManager";
 import MariaDB, {Pool} from "mariadb"
 import Config from "../config/config.json"
 import ModMail from "./mail/ModMail";
-import DateTime, {Duration} from "luxon"
+import {Duration} from "luxon"
 
 export default class ModMailClient extends Client {
     mail: ModMailManager
