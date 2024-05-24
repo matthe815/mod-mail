@@ -2,7 +2,7 @@ import ModMailClient from "./src/ModMailClient";
 import {Events, ForumChannel, Message, Partials, ThreadChannel} from "discord.js";
 import Config from "./config/config.json"
 
-const client: ModMailClient = new ModMailClient({ intents: ["DirectMessages", "Guilds", "MessageContent", "GuildMessages"], partials: [Partials.Message, Partials.Channel, Partials.ThreadMember] })
+const client: ModMailClient = new ModMailClient({ intents: ["GuildMembers", "DirectMessages", "Guilds", "MessageContent", "GuildMessages"], partials: [Partials.Message, Partials.Channel, Partials.ThreadMember] })
 
 client.on(Events.ClientReady, async () => {
     console.log("Bot is online.")
@@ -38,7 +38,7 @@ client.on(Events.ThreadUpdate, async (last, now) => {
 
     if (last.appliedTags.length != now.appliedTags.length) {
         mail.reply({
-            content: `This ticket has been assigned with the tag: ${threadParent.availableTags.find((tag) => tag.id == newTags[0])}`
+            content: `This ticket has been assigned with the tag: ${threadParent.availableTags.find((tag) => tag.id == newTags[0])?.name}`
         })
     }
 })

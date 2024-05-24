@@ -112,10 +112,12 @@ export default class ModMailClient extends Client {
         const memberships: GuildMember[] = []
 
         for (const guild of this.guilds.cache.values()) {
-            const member = await guild.members.fetch(user.id)
-            if (!member) continue
+            try {
+                const member = await guild.members.fetch(user.id)
+                if (!member) continue
 
-            memberships.push(member)
+                memberships.push(member)
+            } catch (e) {}
         }
 
         return memberships
