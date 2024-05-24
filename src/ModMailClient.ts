@@ -11,6 +11,7 @@ import ModMailManager from "./mail/ModMailManager";
 import MariaDB, {Pool} from "mariadb"
 import Config from "../config/config.json"
 import ModMail from "./mail/ModMail";
+import DateTime, {Duration} from "luxon"
 
 export default class ModMailClient extends Client {
     mail: ModMailManager
@@ -38,7 +39,7 @@ export default class ModMailClient extends Client {
             mail.setThread(thread)
             await mail.commit()
             await mail.send(message)
-            await message.reply(`Thank you for your inquiry, your ticket ID is #${mail.mail_uuid}. The average response time is ${Math.floor(await this.mail.getAverageResponseTime(userGuilds[0].guild))} seconds.`)
+            await message.reply(`Thank you for your inquiry, your ticket ID is #${mail.mail_uuid}. The average response time is ${Duration.fromMillis(await this.mail.getAverageResponseTime(userGuilds[0].guild) * 1000)} seconds.`)
             return
         }
 
