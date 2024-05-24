@@ -66,7 +66,7 @@ export default class ModMailClient extends Client {
 
         const mail = await this.handleInteraction(guildReply)
         if (!mail) return
-        await message.reply(`Thank you for your inquiry, your ticket ID is #${mail.mail_uuid}. The average response time is ${Math.floor(await this.mail.getAverageResponseTime(userGuilds[0].guild))} seconds.`)
+        await message.reply(`Thank you for your inquiry, your ticket ID is WL-${mail.manager.total()}. The average response time is ${Math.floor(await this.mail.getAverageResponseTime(userGuilds[0].guild))} seconds.`)
     }
 
     public async handleInteraction(interaction: Interaction): Promise<ModMail | undefined> {
