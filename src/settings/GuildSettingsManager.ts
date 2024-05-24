@@ -8,6 +8,7 @@ export default class GuildSettingsManager {
 
     constructor(client: ModMailClient) {
         this.client = client
+        this.settings = []
     }
 
 
@@ -20,8 +21,8 @@ export default class GuildSettingsManager {
         }
     }
 
-    public create() {
-
+    public create(data: GuildSettingsData) {
+        this.settings.push(new GuildSettings(this, data))
     }
 
     public get(guild: Guild): GuildSettings | undefined {
