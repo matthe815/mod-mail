@@ -52,7 +52,7 @@ web_modules/
 .npm
 
 # Exclude the config
-.config/config-test.json
+.config/config.json
 
 # Optional eslint cache
 .eslintcache
