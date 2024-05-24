@@ -8,6 +8,7 @@ client.on(Events.ClientReady, async () => {
     console.log("Bot is online.")
 
     await client.mail.load()
+    await client.bans.load()
     console.log(`Loaded ${client.mail.totalOpen()} pieces of mail.`)
 })
 

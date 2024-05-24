@@ -12,14 +12,17 @@ import MariaDB, {Pool} from "mariadb"
 import Config from "../config/config.json"
 import ModMail from "./mail/ModMail";
 import {Duration} from "luxon"
+import UserBanManager from "./bans/UserBanManager";
 
 export default class ModMailClient extends Client {
     mail: ModMailManager
+    bans: UserBanManager
     db: Pool
 
     constructor(options: ClientOptions) {
         super(options)
         this.mail = new ModMailManager(this)
+        this.bans = new UserBanManager(this)
         this.db = MariaDB.createPool(Config.database)
     }
 
@@ -29,6 +32,11 @@ export default class ModMailClient extends Client {
 
         if (recentMail != undefined) {
             recentMail.send(message)
+            return
+        }
+
+        if (userGuilds.length == 0) {
+            await message.reply("You have no guilds of which you can submit mail into.")
             return
         }
 
@@ -123,7 +131,20 @@ export default class ModMailClient extends Client {
     public async replyToThread(message: Message) {
         const modMail = this.mail.getThreadMail(message.channel.id)
         if (!modMail) return
+        if (modMail.closed) return
 
+        if (message.content == ">>ban") {
+            if (!message.guild) return
+            if (!message.channel.isThread()) return
+
+            modMail.setClosed(true)
+            message.channel.setArchived(true)
+
+            await modMail.commit()
+            await this.bans.ban(message.author.id, message.guild.id)
+            await modMail.reply({ content: "You have been banned from sending Mod Mail messages." })
+            return
+        }
 
         modMail.reply({
             content: `[${message.author.username}] ${message.content}`,
@@ -138,6 +159,7 @@ export default class ModMailClient extends Client {
             try {
                 const member = await guild.members.fetch(user.id)
                 if (!member) continue
+                if (this.bans.has(member.id, member.guild.id)) continue
 
                 memberships.push(member)
             } catch (e) {}
