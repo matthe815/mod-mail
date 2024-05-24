@@ -84,7 +84,7 @@ export default class ModMailClient extends Client {
             formattedString += `${hours} ${hours === 1 ? 'hour' : 'hours'}`;
         }
         if (minutes > 0) {
-            formattedString += `, ${minutes} ${minutes === 1 ? 'minute' : 'minutes'}`;
+            formattedString += `${minutes} ${minutes === 1 ? 'minute' : 'minutes'}`;
         }
 
         // Return the formatted string
