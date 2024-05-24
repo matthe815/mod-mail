@@ -39,7 +39,7 @@ export default class ModMailClient extends Client {
             mail.setThread(thread)
             await mail.commit()
             await mail.send(message)
-            await message.reply(`Thank you for your inquiry, your ticket ID is WL-${mail.manager.total()}. The average response time is ${Duration.fromMillis(await this.mail.getAverageResponseTime(userGuilds[0].guild) * 1000).shiftTo("hours", "minutes", "seconds").rescale().toHuman()}.`)
+            await message.reply(`Thank you for your inquiry, your ticket ID is WL-${mail.manager.total()}. The average response time is ${this.formatMilliseconds(await this.mail.getAverageResponseTime(userGuilds[0].guild) * 1000)}`)
             return
         }
 
@@ -66,7 +66,29 @@ export default class ModMailClient extends Client {
 
         const mail = await this.handleInteraction(guildReply)
         if (!mail) return
-        await message.reply(`Thank you for your inquiry, your ticket ID is WL-${mail.manager.total()}. The average response time is ${Duration.fromMillis(await this.mail.getAverageResponseTime(userGuilds[0].guild) * 1000).rescale().shiftTo("hours", "minutes", "seconds").toHuman()}.`)
+        await message.reply(`Thank you for your inquiry, your ticket ID is WL-${mail.manager.total()}. The average response time is ${this.formatMilliseconds(await this.mail.getAverageResponseTime(userGuilds[0].guild) * 1000)}.`)
+    }
+
+    // Function to format milliseconds to "x hours, x minutes" format
+    formatMilliseconds(milliseconds: number) {
+        // Create a Luxon Duration object from milliseconds
+        const duration = Duration.fromMillis(milliseconds).rescale();
+
+        // Extract hours and minutes from the duration
+        const hours = duration.hours;
+        const minutes = duration.minutes;
+
+        // Build the formatted string
+        let formattedString = '';
+        if (hours > 0) {
+            formattedString += `${hours} ${hours === 1 ? 'hour' : 'hours'}`;
+        }
+        if (minutes > 0) {
+            formattedString += `, ${minutes} ${minutes === 1 ? 'minute' : 'minutes'}`;
+        }
+
+        // Return the formatted string
+        return formattedString;
     }
 
     public async handleInteraction(interaction: Interaction): Promise<ModMail | undefined> {
