@@ -133,17 +133,25 @@ export default class ModMailClient extends Client {
         if (!modMail) return
         if (modMail.closed) return
 
-        if (message.content == ">>ban") {
-            if (!message.guild) return
-            if (!message.channel.isThread()) return
+        switch (message.content) {
+            case ">>ban":
+                if (!message.guild) return
+                if (!message.channel.isThread()) return
 
-            modMail.setClosed(true)
-            message.channel.setArchived(true)
+                modMail.setClosed(true)
+                message.channel.setArchived(true)
 
-            await modMail.commit()
-            await this.bans.ban(message.author.id, message.guild.id)
-            await modMail.reply({ content: "You have been banned from sending Mod Mail messages." })
-            return
+                await modMail.commit()
+                await this.bans.ban(message.author.id, message.guild.id)
+                await modMail.reply({ content: "You have been banned from sending Mod Mail messages." })
+                return
+            case ">>unban":
+                if (!message.guild) return
+                if (!message.channel.isThread()) return
+
+                await this.bans.unban(message.author.id, message.guild.id)
+                await modMail.reply({ content: "You have been unbanned from sending Mod Mail messages." })
+                break;
         }
 
         modMail.reply({
