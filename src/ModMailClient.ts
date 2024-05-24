@@ -17,8 +17,7 @@ import EventSystem from "./EventSystem";
 
 export default class ModMailClient extends Client {
     mail: ModMailManager
-    bans: UserBanManager
-
+    settings: GuildSettingsManager
     db: Pool
 
     constructor(options: ClientOptions) {
@@ -27,6 +26,7 @@ export default class ModMailClient extends Client {
 
         this.mail = new ModMailManager(this)
         this.bans = new UserBanManager(this)
+        this.settings = new GuildSettingsManager(this)
         this.db = MariaDB.createPool(Config.database)
     }
 
