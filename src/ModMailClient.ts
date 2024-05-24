@@ -131,7 +131,6 @@ export default class ModMailClient extends Client {
     public async replyToThread(message: Message) {
         const modMail = this.mail.getThreadMail(message.channel.id)
         if (!modMail) return
-        if (modMail.closed) return
 
         switch (message.content) {
             case ">>ban":
@@ -151,8 +150,10 @@ export default class ModMailClient extends Client {
 
                 await this.bans.unban(message.author.id, message.guild.id)
                 await modMail.reply({ content: "You have been unbanned from sending Mod Mail messages." })
-                break;
+                return
         }
+
+        if (modMail.closed) return
 
         modMail.reply({
             content: `[${message.author.username}] ${message.content}`,
