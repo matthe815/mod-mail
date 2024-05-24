@@ -85,6 +85,7 @@ export default class ModMailClient extends Client {
         // Extract hours and minutes from the duration
         const hours = duration.hours;
         const minutes = duration.minutes;
+        const seconds = duration.seconds;
 
         // Build the formatted string
         let formattedString = '';
@@ -93,6 +94,9 @@ export default class ModMailClient extends Client {
         }
         if (minutes > 0) {
             formattedString += `${minutes} ${minutes === 1 ? 'minute' : 'minutes'}`;
+        }
+        if (seconds > 0) {
+            formattedString += `${seconds} ${seconds === 1 ? 'minute' : 'minutes'}`;
         }
 
         // Return the formatted string

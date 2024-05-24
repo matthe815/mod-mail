@@ -97,7 +97,7 @@ export default class ModMail {
         if (thread == undefined || !thread.isThread()) return
 
         thread.send({
-            content: message.content.replace(/(@everyone|@here)/g, '[@]everyone'),
+            content: message.content.length == 0 ? "No message provided" : message.content.replace(/(@everyone|@here)/g, '[@]everyone'),
             files: message.attachments.map((attachment: Attachment) => attachment.url)
         })
     }
