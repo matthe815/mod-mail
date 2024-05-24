@@ -50,7 +50,7 @@ export default class ModMail {
         if (!forumChannel.isThreadOnly()) return
 
         return await forumChannel.threads.create({
-            name: `Ticket #${this.manager.total()} - ${user.username}`,
+            name: `Ticket WL-${this.manager.total()} - ${user.username}`,
             message: {
                 content: `${user.username} has opened a mod-mail ticket.`
             }
