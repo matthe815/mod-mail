@@ -39,7 +39,7 @@ export default class ModMailClient extends Client {
             mail.setThread(thread)
             await mail.commit()
             await mail.send(message)
-            await message.reply(`Thank you for your inquiry, your ticket ID is WL-#${mail.manager.total()}. The average response time is ${Duration.fromMillis(await this.mail.getAverageResponseTime(userGuilds[0].guild) * 1000)} seconds.`)
+            await message.reply(`Thank you for your inquiry, your ticket ID is WL-${mail.manager.total()}. The average response time is ${Duration.fromMillis(await this.mail.getAverageResponseTime(userGuilds[0].guild) * 1000).toHuman()}.`)
             return
         }
 
