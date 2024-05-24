@@ -39,7 +39,7 @@ export default class ModMailClient extends Client {
             mail.setThread(thread)
             await mail.commit()
             await mail.send(message)
-            await message.reply(`Thank you for your inquiry, your ticket ID is WL-${mail.manager.total()}. The average response time is ${Duration.fromMillis(await this.mail.getAverageResponseTime(userGuilds[0].guild) * 1000).set({ milliseconds: 0 }).rescale().toHuman()}.`)
+            await message.reply(`Thank you for your inquiry, your ticket ID is WL-${mail.manager.total()}. The average response time is ${Duration.fromMillis(await this.mail.getAverageResponseTime(userGuilds[0].guild) * 1000).shiftTo("hours", "minutes", "seconds").rescale().toHuman()}.`)
             return
         }
 
@@ -66,7 +66,7 @@ export default class ModMailClient extends Client {
 
         const mail = await this.handleInteraction(guildReply)
         if (!mail) return
-        await message.reply(`Thank you for your inquiry, your ticket ID is WL-${mail.manager.total()}. The average response time is ${Duration.fromMillis(await this.mail.getAverageResponseTime(userGuilds[0].guild) * 1000).set({milliseconds: 0}).rescale().toHuman()}.`)
+        await message.reply(`Thank you for your inquiry, your ticket ID is WL-${mail.manager.total()}. The average response time is ${Duration.fromMillis(await this.mail.getAverageResponseTime(userGuilds[0].guild) * 1000).shiftTo("hours", "minutes", "seconds").rescale().toHuman()}.`)
     }
 
     public async handleInteraction(interaction: Interaction): Promise<ModMail | undefined> {
