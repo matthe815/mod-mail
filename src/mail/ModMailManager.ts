@@ -21,7 +21,7 @@ export default class ModMailManager {
             return thread.guild.id == guild.id
         }))
 
-        if (guildMail.length == 0) return 0;
+        if (guildMail.length == 0) return 1;
 
         const mailResponseTimes: number[] = guildMail.map((mail: ModMail) => mail.response_time)
         return mailResponseTimes.reduce((mail1, mail2) => mail1 + mail2) / (mailResponseTimes.length - 1)
