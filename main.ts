@@ -12,6 +12,7 @@ client.on(Events.ClientReady, async () => {
 
     await client.mail.load()
     await client.bans.load()
+    await client.settings.load()
     console.log(`Loaded ${client.mail.total({ filter: TotalingFilter.Open })} pieces of mail.`)
 
     let count = 0;
