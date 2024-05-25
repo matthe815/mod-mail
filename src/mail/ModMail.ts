@@ -67,8 +67,10 @@ export default class ModMail {
         return this;
     }
 
-    public getThread(): Promise<Channel | null> {
-        return this.manager.client.channels.fetch(this.thread_id)
+    public async getThread(): Promise<ThreadChannel | undefined> {
+        const thread = await this.manager.client.channels.fetch(this.thread_id)
+        if (!thread || !thread.isThread()) return
+        return thread
     }
 
     public setUser(user: User): ModMail {
@@ -80,25 +82,29 @@ export default class ModMail {
         return this.manager.client.users.fetch(this.user_id)
     }
 
+    public async relay(message: MessageCreateOptions, direction: any) {
+        // TODO; Implement relay.
+    }
+
     public async reply(message: MessageCreateOptions) {
         if (this.response_time == 0) {
             this.response_time = (new Date().getTime() - this.created_at) / 1000
-            this.commit()
+            await this.commit()
         }
 
         const user = await this.getUser()
         if (user == undefined) return
 
-        user.send(message)
+        await user.send(message)
     }
 
-    public async send(message: Message) {
+    public async send(message: MessageCreateOptions) {
         const thread = await this.getThread()
         if (thread == undefined || !thread.isThread()) return
 
         thread.send({
-            content: message.content.length == 0 ? "No message provided" : message.content.replace(/(@everyone|@here)/g, '[@]everyone'),
-            files: message.attachments.map((attachment: Attachment) => attachment.url)
+            content: message.content?.length == 0 ? "No message provided" : message.content?.replace(/(@everyone|@here)/g, '[@]everyone'),
+            files:  message.files //message.attachments.map((attachment: Attachment) => attachment.url)
         })
     }
 
