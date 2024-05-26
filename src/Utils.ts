@@ -43,7 +43,7 @@ export default class Utils {
 
         for (const guild of user.client.guilds.cache.values()) {
             try {
-                const member = await guild.members.fetch(user.id)
+                const member: GuildMember = await guild.members.fetch(user.id)
                 if (!member) continue
 
                 memberships.push(member)
