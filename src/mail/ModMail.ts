@@ -42,11 +42,11 @@ export default class ModMail {
 
     public async makeInitialThread(guild: Guild, user: User): Promise<void> {
         const forumChannel = guild.channels.cache.get(Config.modMailChannel)
+        let thread: ThreadChannel
 
-        if (!forumChannel) return
-        if (!forumChannel.isThreadOnly()) return
+        if (!forumChannel || !forumChannel.isThreadOnly()) return
 
-        const thread = await forumChannel.threads.create({
+        thread = await forumChannel.threads.create({
             name: `Ticket WL-${this.manager.total({ filter: TotalingFilter.All })} - ${user.username}`,
             message: {
                 content: `${user.username} has opened a mod-mail ticket.`
@@ -115,7 +115,7 @@ export default class ModMail {
         const thread = await this.getThread()
         if (thread == undefined || !thread.isThread()) return
 
-        thread.send({
+        await thread.send({
             content: message.content?.length == 0 ? "No message provided" : message.content?.replace(/(@everyone|@here)/g, '[@]everyone'),
             files:  message.files //message.attachments.map((attachment: Attachment) => attachment.url)
         })
