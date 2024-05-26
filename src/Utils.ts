@@ -14,25 +14,16 @@ export default class Utils {
     }
 
     public static formatRelativeTime(milliseconds: number): string {
-        // Create a Luxon Duration object from milliseconds
-        const duration = Duration.fromMillis(milliseconds).rescale();
+        const duration: Duration = Duration.fromMillis(milliseconds).rescale();
 
-        // Extract hours and minutes from the duration
-        const hours = duration.hours;
-        const minutes = duration.minutes;
-        const seconds = duration.seconds;
+        const hours: number = duration.hours;
+        const minutes: number = duration.minutes;
+        const seconds: number = duration.seconds;
 
-        // Build the formatted string
-        let formattedString = [];
-        if (hours > 0) {
-            formattedString.push(`${hours} ${hours === 1 ? 'hour' : 'hours'}`);
-        }
-        if (minutes > 0) {
-            formattedString.push(`${minutes} ${minutes === 1 ? 'minute' : 'minutes'}`);
-        }
-        if (seconds > 0) {
-            formattedString.push(`${seconds} ${seconds === 1 ? 'seconds' : 'seconds'}`);
-        }
+        let formattedString: string[] = [];
+        if (hours > 0) formattedString.push(`${hours} ${hours === 1 ? 'hour' : 'hours'}`);
+        if (minutes > 0) formattedString.push(`${minutes} ${minutes === 1 ? 'minute' : 'minutes'}`);
+        if (seconds > 0) formattedString.push(`${seconds} ${seconds === 1 ? 'seconds' : 'seconds'}`);
 
         // Return the formatted string
         return formattedString.join(" ");
