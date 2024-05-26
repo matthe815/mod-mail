@@ -27,7 +27,7 @@ export default class UserBanManager {
         this.bans.push(new UserBan(this, { user_id, guild_id, banned_by: "" }))
     }
 
-    public async ban(user_id: string, guild_id: string) {
+    public async ban(user_id: string, guild_id: string, banner?: string) {
         const connection = await this.client.db.getConnection()
         await connection.execute("INSERT INTO modmail_bans(user_id, guild_id, banned_by) VALUES (?, ?, ?)", [user_id, guild_id, ""])
 

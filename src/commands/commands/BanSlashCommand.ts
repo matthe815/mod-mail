@@ -25,9 +25,9 @@ export default class BanSlashCommand extends SlashCommand {
         currentMail.setClosed(true)
         currentMail.commit()
 
-        this.manager.client.bans.ban(currentMail.user_id, interaction.guildId || "")
+        this.manager.client.bans.ban(currentMail.user_id, interaction.guildId || "", interaction.user.id)
 
-        currentMail.relay({ content: "You have been banned from sending Mod Mail messages." }, RelayDirection.User)
+        currentMail.relay({ content: `You have been banned from sending Mod Mail messages in ${interaction.guild?.name}.` }, RelayDirection.User)
         interaction.reply({ content: `The user has been banned from making mod mail.`, flags: 64})
     }
 }
