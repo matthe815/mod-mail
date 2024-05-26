@@ -33,7 +33,7 @@ export default class ModMailClient extends Client {
     }
 
     public async onDMReply(message: Message): Promise<void> {
-        const userMembership: GuildMember[] = await this.getAllUserMembership(message.author)
+        const userMembership: GuildMember[] = await Utils.getMembership(message.author)
         const currentMail = this.mail.getRecentMail(message.author.id)
 
         if (currentMail != undefined) {
@@ -59,7 +59,7 @@ export default class ModMailClient extends Client {
                 await mail.relay(message, RelayDirection.Staff)
                 break;
             default:
-                stringMenu = (Utils.MakeUserMembershipList(userMembership)).setCustomId("mod_mail")
+                stringMenu = (Utils.makeUserMembershipList(userMembership)).setCustomId("mod_mail")
                 actionRowBuilder = (new ActionRowBuilder<StringSelectMenuBuilder>()).addComponents(stringMenu)
 
                 await message.reply({
@@ -100,21 +100,5 @@ export default class ModMailClient extends Client {
             content: `[${message.author.username}] ${message.content}`,
             files: message.attachments.map((attachment: Attachment) => attachment.url)
         }, RelayDirection.User)
-    }
-
-    public async getAllUserMembership(user: User): Promise<GuildMember[]> {
-        const memberships: GuildMember[] = []
-
-        for (const guild of this.guilds.cache.values()) {
-            try {
-                const member = await guild.members.fetch(user.id)
-                if (!member) continue
-                if (this.bans.has(member.id, member.guild.id)) continue
-
-                memberships.push(member)
-            } catch (e) {}
-        }
-
-        return memberships
     }
 }
