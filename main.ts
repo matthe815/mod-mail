@@ -18,7 +18,7 @@ client.on(Events.MessageCreate, async (message: Message) => {
     if (message.author.bot) return
 
     if (message.channel.isDMBased()) await client.onDMReply(message)
-    if (message.channel.isThread()) await client.replyToThread(message)
+    if (message.channel.isThread()) await client.onThreadReply(message)
 })
 
 client.on(Events.InteractionCreate, async (interaction: Interaction) => {

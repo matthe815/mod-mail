@@ -32,7 +32,7 @@ export default class ModMailClient extends Client {
         this.db = MariaDB.createPool(Config.database)
     }
 
-    public async onDMReply(message: Message) {
+    public async onDMReply(message: Message): Promise<void> {
         const userMembership: GuildMember[] = await this.getAllUserMembership(message.author)
         const currentMail = this.mail.getRecentMail(message.author.id)
 
@@ -72,37 +72,34 @@ export default class ModMailClient extends Client {
         await message.reply(`Thank you for your inquiry, your ticket ID is WL-${this.mail.total({ filter: TotalingFilter.All })}. The average response time is ${Utils.formatRelativeTime(await this.mail.getAverageResponseTime(userMembership[0].guild.id) * 1000)}.`)
     }
 
-    public async replyToThread(message: Message) {
-        const modMail = this.mail.getThreadMail(message.channel.id)
-        if (!modMail) return
+    public async onThreadReply(message: Message): Promise<void> {
+        const currentMail = this.mail.getThreadMail(message.channel.id)
+
+        if (!currentMail) return
+        if (!message.guild || !message.channel.isThread()) return
 
         switch (message.content) {
             case ">>ban":
-                if (!message.guild) return
-                if (!message.channel.isThread()) return
-
-                modMail.setClosed(true)
                 message.channel.setArchived(true)
 
-                await modMail.commit()
+                currentMail.setClosed(true)
+                await currentMail.commit()
+
                 await this.bans.ban(message.author.id, message.guild.id)
-                await modMail.reply({ content: "You have been banned from sending Mod Mail messages." })
+                await currentMail.relay({ content: "You have been banned from sending Mod Mail messages." }, RelayDirection.User)
                 return
             case ">>unban":
-                if (!message.guild) return
-                if (!message.channel.isThread()) return
-
                 await this.bans.unban(message.author.id, message.guild.id)
-                await modMail.reply({ content: "You have been unbanned from sending Mod Mail messages." })
+                await currentMail.relay({ content: "You have been unbanned from sending Mod Mail messages." }, RelayDirection.User)
                 return
         }
 
-        if (modMail.closed) return
+        if (currentMail.closed) return
 
-        await modMail.reply({
+        await currentMail.relay({
             content: `[${message.author.username}] ${message.content}`,
             files: message.attachments.map((attachment: Attachment) => attachment.url)
-        })
+        }, RelayDirection.User)
     }
 
     public async getAllUserMembership(user: User): Promise<GuildMember[]> {
