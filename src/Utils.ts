@@ -1,5 +1,5 @@
-import {GuildMember, StringSelectMenuBuilder, StringSelectMenuOptionBuilder, User} from "discord.js/typings";
 import {Duration} from "luxon";
+import {GuildMember, StringSelectMenuBuilder, StringSelectMenuOptionBuilder, User} from "discord.js";
 
 export default class Utils {
     public static makeUserMembershipList(membershipList: GuildMember[]): StringSelectMenuBuilder {

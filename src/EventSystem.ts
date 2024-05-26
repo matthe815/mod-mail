@@ -1,6 +1,5 @@
-import {Guild, Message} from "discord.js/typings";
-import {RelayDirection} from "./mail/ModMail";
-import {Interaction} from "discord.js";
+import ModMail, {RelayDirection} from "./mail/ModMail";
+import {Guild, Interaction, Message} from "discord.js";
 import ModMailClient from "./ModMailClient";
 
 export default class EventSystem {
@@ -15,7 +14,7 @@ export default class EventSystem {
                     const guild: Guild | undefined = EventSystem.client.guilds.cache.get(interaction.values[0])
                     if (!guild) return
 
-                    const mail = EventSystem.client.mail.create(interaction.user)
+                    const mail: ModMail = EventSystem.client.mail.create(interaction.user)
 
                     await mail.makeInitialThread(guild, interaction.user)
                     await mail.commit()

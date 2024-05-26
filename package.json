@@ -4,7 +4,8 @@
   "description": "",
   "main": "main.ts",
   "scripts": {
-    "test": "npx jest"
+    "test": "npx jest",
+    "start": "npx ts-node ./main.ts"
   },
   "repository": {
     "type": "git",
