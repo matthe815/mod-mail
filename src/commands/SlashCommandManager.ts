@@ -1,6 +1,7 @@
 import SlashCommand from "./SlashCommand";
 import ModMailClient from "../ModMailClient";
 import {Routes} from "discord.js";
+import Config from "../../config/config.json"
 
 export default class SlashCommandManager {
     public client: ModMailClient
@@ -23,7 +24,7 @@ export default class SlashCommandManager {
             commands.push(command.register().toJSON())
         }
 
-        await this.client.rest.put(Routes.applicationCommands("1244029127590150194"), { body: commands })
+        await this.client.rest.put(Routes.applicationCommands(Config.client_id), { body: commands })
     }
 
     public total(): number {
