@@ -33,7 +33,7 @@ export default class ModMailClient extends Client {
     }
 
     public async onDMReply(message: Message): Promise<void> {
-        const userMembership: GuildMember[] = await Utils.getMembership(message.author)
+        const userMembership: GuildMember[] = (await Utils.getMembership(message.author)).filter((member: GuildMember) => !this.bans.has(member.id, member.guild.id))
         const currentMail = this.mail.getRecentMail(message.author.id)
 
         if (currentMail != undefined) {
