@@ -1,8 +1,8 @@
-import {GuildMember, StringSelectMenuBuilder, StringSelectMenuOptionBuilder} from "discord.js/typings";
+import {GuildMember, StringSelectMenuBuilder, StringSelectMenuOptionBuilder, User} from "discord.js/typings";
 import {Duration} from "luxon";
 
 export default class Utils {
-    public static MakeUserMembershipList(membershipList: GuildMember[]): StringSelectMenuBuilder {
+    public static makeUserMembershipList(membershipList: GuildMember[]): StringSelectMenuBuilder {
         return new StringSelectMenuBuilder()
             .addOptions(
                 membershipList.map((membership: GuildMember) => {
@@ -36,5 +36,20 @@ export default class Utils {
 
         // Return the formatted string
         return formattedString.join(" ");
+    }
+
+    public static async getMembership(user: User): Promise<GuildMember[]> {
+        const memberships: GuildMember[] = []
+
+        for (const guild of user.client.guilds.cache.values()) {
+            try {
+                const member = await guild.members.fetch(user.id)
+                if (!member) continue
+
+                memberships.push(member)
+            } catch (e) {}
+        }
+
+        return memberships
     }
 }

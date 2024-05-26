@@ -12,6 +12,16 @@ client.on(Events.ClientReady, async () => {
     await client.mail.load()
     await client.bans.load()
     console.log(`Loaded ${client.mail.total({ filter: TotalingFilter.Open })} pieces of mail.`)
+
+    let count = 0;
+
+    for (const guild of client.guilds.cache.values()) {
+        if (guild.members.cache.size >= guild.memberCount) continue
+        await guild.members.fetch()
+        count++
+    }
+
+    console.log(`Cached ${count} oversized servers.`);
 })
 
 client.on(Events.MessageCreate, async (message: Message) => {
