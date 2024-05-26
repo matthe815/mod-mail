@@ -1,4 +1,5 @@
 import GuildSettingsManager from "./GuildSettingsManager";
+import {ForumChannel} from "discord.js";
 
 export default class GuildSettings {
     public manager: GuildSettingsManager
@@ -15,6 +16,17 @@ export default class GuildSettings {
     public setModMailChannel(channel_id: string): GuildSettings {
         this.modmail_channel = channel_id
         return this
+    }
+
+    public async getModChannel(): Promise<ForumChannel | undefined> {
+        const channel = await this.manager.client.channels.fetch(this.modmail_channel)
+        if (!channel || !(channel instanceof ForumChannel)) return
+        return channel
+    }
+
+    public async commit(): Promise<void> {
+        const connection = await this.manager.client.db.getConnection()
+        await connection.execute("INSERT INTO modmail_settings(guild_id, modmail_channel) VALUES(?, ?) ON DUPLICATE KEY UPDATE modmail_channel = VALUES(modmail_channel)", [this.guild_id, this.modmail_channel])
     }
 }
 
