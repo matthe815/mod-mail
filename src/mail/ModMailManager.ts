@@ -31,7 +31,7 @@ export default class ModMailManager {
 
     public getGuildMail(guild: string): Promise<ModMail[]> {
         return Promise.all(this.mail.filter(async (mail: ModMail) => {
-            const thread = await mail.getThread()
+            const thread = await mail.getThread().catch((e) => console.log(e))
             if (!thread) return false
             return thread.guild.id == guild
         }))
