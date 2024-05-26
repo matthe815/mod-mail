@@ -27,5 +27,12 @@ export default class EventSystem {
                     break;
             }
         }
+        if (interaction.isCommand()) {
+            const command = interaction.commandName
+            const slashCommand = this.client.commands.get(command)
+            if (!slashCommand) return
+
+            slashCommand.execute(interaction)
+        }
     }
 }
