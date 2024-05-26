@@ -65,8 +65,6 @@ export default class ModMailClient extends Client {
                 })
                 break;
         }
-
-        await message.reply(`Thank you for your inquiry, your ticket ID is WL-${this.mail.total({ filter: TotalingFilter.All })}. The average response time is ${Utils.formatRelativeTime(await this.mail.getAverageResponseTime(userMembership[0].guild.id) * 1000)}.`)
     }
 
     public async onThreadReply(message: Message): Promise<void> {
