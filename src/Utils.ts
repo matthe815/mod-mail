@@ -25,7 +25,6 @@ export default class Utils {
         if (minutes > 0) formattedString.push(`${minutes} ${minutes === 1 ? 'minute' : 'minutes'}`);
         if (seconds > 0) formattedString.push(`${seconds} ${seconds === 1 ? 'seconds' : 'seconds'}`);
 
-        // Return the formatted string
         return formattedString.join(" ");
     }
 
