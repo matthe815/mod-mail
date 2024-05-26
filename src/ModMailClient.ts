@@ -85,23 +85,6 @@ export default class ModMailClient extends Client {
 
         if (!currentMail) return
         if (!message.guild || !message.channel.isThread()) return
-
-        switch (message.content) {
-            case ">>ban":
-                message.channel.setArchived(true)
-
-                currentMail.setClosed(true)
-                await currentMail.commit()
-
-                await this.bans.ban(message.author.id, message.guild.id)
-                await currentMail.relay({ content: "You have been banned from sending Mod Mail messages." }, RelayDirection.User)
-                return
-            case ">>unban":
-                await this.bans.unban(message.author.id, message.guild.id)
-                await currentMail.relay({ content: "You have been unbanned from sending Mod Mail messages." }, RelayDirection.User)
-                return
-        }
-
         if (currentMail.closed) return
 
         await currentMail.relay({
