@@ -42,12 +42,10 @@ export default class Utils {
         const memberships: GuildMember[] = []
 
         for (const guild of user.client.guilds.cache.values()) {
-            try {
-                const member: GuildMember = await guild.members.fetch(user.id)
-                if (!member) continue
+            const member = await guild.members.fetch(user.id).catch((e) => console.log(e))
+            if (!member) continue
 
-                memberships.push(member)
-            } catch (e) {}
+            memberships.push(member)
         }
 
         return memberships
