@@ -1,5 +1,5 @@
 import ModMailClient from "./src/ModMailClient";
-import {Events, ForumChannel, GuildForumTag, Interaction, Message, Partials} from "discord.js";
+import {Events, ForumChannel, Guild, GuildForumTag, Interaction, Message, Partials} from "discord.js";
 import Config from "./config/config.json"
 import {TotalingFilter} from "./src/mail/ModMailManager";
 import EventSystem from "./src/EventSystem";
@@ -25,6 +25,11 @@ client.on(Events.ClientReady, async () => {
 
     console.log(`Cached ${count} oversized servers.`)
     console.log(`Loaded ${client.settings.total()} server settings`)
+})
+
+client.on(Events.GuildCreate, (guild: Guild) => {
+    client.settings.create({ guild_id: guild.id })
+    console.log("I joined a server.")
 })
 
 client.on(Events.MessageCreate, async (message: Message) => {
