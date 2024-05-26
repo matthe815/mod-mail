@@ -1,17 +1,14 @@
-import ModMailManager from "./ModMailManager";
+import ModMailManager, { TotalingFilter } from "./ModMailManager";
 import {Snowflake} from "nodejs-snowflake";
 import {
-    Attachment,
-    Channel,
-    Guild,
-    Message,
+    Guild, Message,
     MessageCreateOptions,
-    MessagePayload,
     ThreadChannel,
     User
 } from "discord.js";
 import {PoolConnection} from "mariadb";
 import Config from "../../config/config.json";
+import {Attachment} from "discord.js/typings";
 
 export default class ModMail {
     manager:       ModMailManager
@@ -43,18 +40,20 @@ export default class ModMail {
         })
     }
 
-    public async makeInitialThread(guild: Guild, user: User): Promise<ThreadChannel | undefined> {
+    public async makeInitialThread(guild: Guild, user: User): Promise<void> {
         const forumChannel = guild.channels.cache.get(Config.modMailChannel)
 
         if (!forumChannel) return
         if (!forumChannel.isThreadOnly()) return
 
-        return await forumChannel.threads.create({
-            name: `Ticket WL-${this.manager.total()} - ${user.username}`,
+        const thread = await forumChannel.threads.create({
+            name: `Ticket WL-${this.manager.total({ filter: TotalingFilter.All })} - ${user.username}`,
             message: {
                 content: `${user.username} has opened a mod-mail ticket.`
             }
         })
+
+        this.setThread(thread)
     }
 
     public setClosed(status: boolean): ModMail {
@@ -62,8 +61,8 @@ export default class ModMail {
         return this;
     }
 
-    public setThread(thread: ThreadChannel): ModMail {
-        this.thread_id = thread.id;
+    public setThread(thread: ThreadChannel | string): ModMail {
+        this.thread_id = (thread instanceof ThreadChannel) ? thread.id : thread;
         return this;
     }
 
@@ -73,17 +72,31 @@ export default class ModMail {
         return thread
     }
 
-    public setUser(user: User): ModMail {
-        this.user_id = user.id
+    public setUser(user: User | string): ModMail {
+        this.user_id = (user instanceof User) ? user.id : user
         return this;
     }
 
-    public getUser(): Promise<User> {
-        return this.manager.client.users.fetch(this.user_id)
+    public async getUser(): Promise<User> {
+        return await this.manager.client.users.fetch(this.user_id)
     }
 
-    public async relay(message: MessageCreateOptions, direction: any) {
-        // TODO; Implement relay.
+    public async relay(message: MessageCreateOptions | Message, direction: RelayDirection) {
+        let messageOptions: MessageCreateOptions
+
+        messageOptions = {
+            content: message.content,
+            files: (message instanceof Message) ? message.attachments.map((attachment: Attachment) => attachment.url) : message.files
+        }
+
+        switch (direction) {
+            case RelayDirection.User:
+                await this.reply(messageOptions);
+                break;
+            case RelayDirection.Staff:
+                await this.send(messageOptions)
+                break;
+        }
     }
 
     public async reply(message: MessageCreateOptions) {
@@ -122,6 +135,11 @@ export default class ModMail {
         const connection: PoolConnection = await this.manager.client.db.getConnection()
         await connection.execute("INSERT INTO modmail_mail(mail_uuid, thread_id, user_id, response_time, closed) VALUES (?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE closed = VALUES(closed), response_time = VALUES(response_time)", [ this.mail_uuid, this.thread_id, this.user_id, this.response_time, this.closed ])
     }
+}
+
+export enum RelayDirection {
+    User,
+    Staff
 }
 
 export type ModMailData = {

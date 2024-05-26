@@ -1,135 +1,75 @@
 import {
-    ActionRowBuilder, Attachment,
+    ActionRowBuilder,
+    Attachment,
     Client,
-    ClientOptions, Guild,
-    GuildMember, Interaction,
+    ClientOptions,
+    GuildMember,
     Message,
     StringSelectMenuBuilder,
-    StringSelectMenuOptionBuilder, User
+    ThreadChannel,
+    User
 } from "discord.js";
-import ModMailManager from "./mail/ModMailManager";
+import ModMailManager, {TotalingFilter} from "./mail/ModMailManager";
 import MariaDB, {Pool} from "mariadb"
 import Config from "../config/config.json"
-import ModMail from "./mail/ModMail";
-import {Duration} from "luxon"
+import ModMail, {RelayDirection} from "./mail/ModMail";
 import UserBanManager from "./bans/UserBanManager";
+import Utils from "./Utils";
+import EventSystem from "./EventSystem";
 
 export default class ModMailClient extends Client {
     mail: ModMailManager
     bans: UserBanManager
+
     db: Pool
 
     constructor(options: ClientOptions) {
         super(options)
+        EventSystem.client = this
+
         this.mail = new ModMailManager(this)
         this.bans = new UserBanManager(this)
         this.db = MariaDB.createPool(Config.database)
     }
 
-    public async replyToDM(message: Message) {
-        const userGuilds: GuildMember[] = await this.getAllUserMembership(message.author)
-        const recentMail = this.mail.getRecentMail(message.author.id)
+    public async onDMReply(message: Message) {
+        const userMembership: GuildMember[] = await this.getAllUserMembership(message.author)
+        const currentMail = this.mail.getRecentMail(message.author.id)
 
-        if (recentMail != undefined) {
-            recentMail.send(message)
+        if (currentMail != undefined) {
+            await currentMail.relay(message, RelayDirection.Staff)
             return
         }
 
-        if (userGuilds.length == 0) {
-            await message.reply("You have no guilds of which you can submit mail into.")
-            return
-        }
+        let mail:             ModMail | undefined
+        let thread:           ThreadChannel | undefined
+        let stringMenu:       StringSelectMenuBuilder | undefined
+        let actionRowBuilder: ActionRowBuilder<StringSelectMenuBuilder> | undefined
 
-        if (userGuilds.length == 1) {
-            const mail = this.mail.create(message.author)
-            const thread = await mail.makeInitialThread(userGuilds[0].guild, message.author)
-            if (!thread) return
-            mail.setThread(thread)
-            await mail.commit()
-            await mail.send(message)
-            await message.reply(`Thank you for your inquiry, your ticket ID is WL-${mail.manager.total()}. The average response time is ${this.formatMilliseconds(await this.mail.getAverageResponseTime(userGuilds[0].guild) * 1000)}`)
-            return
-        }
+        switch(userMembership.length) {
+            case 0:
+                await message.reply("You have no servers of which you can submit mail into.")
+                return;
+            case 1:
+                mail = this.mail.create(message.author)
+                await mail.makeInitialThread(userMembership[0].guild, message.author)
+                if (!thread) return
 
-        const serverSelector: StringSelectMenuBuilder = new StringSelectMenuBuilder()
-            .addOptions(
-                userGuilds.map((membership: GuildMember) => {
-                    return new StringSelectMenuOptionBuilder()
-                        .setLabel(membership.guild.name)
-                        .setValue(membership.guild.id)
+                await mail.commit()
+                await mail.relay(message, RelayDirection.Staff)
+                break;
+            default:
+                stringMenu = (Utils.MakeUserMembershipList(userMembership)).setCustomId("mod_mail")
+                actionRowBuilder = (new ActionRowBuilder<StringSelectMenuBuilder>()).addComponents(stringMenu)
+
+                await message.reply({
+                    content: "You are in multiple servers with the bot, please select the one you wish to send mail to.",
+                    components: [actionRowBuilder]
                 })
-            )
-            .setCustomId("mod_mail")
-
-        const actionRowBuilder: ActionRowBuilder<StringSelectMenuBuilder> = new ActionRowBuilder<StringSelectMenuBuilder>()
-            .addComponents(serverSelector)
-
-        const response = await message.reply({
-            content: "You are in multiple servers with the bot, please select the one you wish to send mail to.",
-            components: [actionRowBuilder]
-        })
-
-        const filter = (interaction: Interaction) => message.author.id === interaction.user.id
-        const guildReply = await response.awaitMessageComponent({ filter, time: 60_000 })
-
-        const mail = await this.handleInteraction(guildReply)
-        if (!mail) return
-        await message.reply(`Thank you for your inquiry, your ticket ID is WL-${mail.manager.total()}. The average response time is ${this.formatMilliseconds(await this.mail.getAverageResponseTime(userGuilds[0].guild) * 1000)}.`)
-    }
-
-    // Function to format milliseconds to "x hours, x minutes" format
-    formatMilliseconds(milliseconds: number) {
-        // Create a Luxon Duration object from milliseconds
-        const duration = Duration.fromMillis(milliseconds).rescale();
-
-        // Extract hours and minutes from the duration
-        const hours = duration.hours;
-        const minutes = duration.minutes;
-        const seconds = duration.seconds;
-
-        // Build the formatted string
-        let formattedString = [];
-        if (hours > 0) {
-            formattedString.push(`${hours} ${hours === 1 ? 'hour' : 'hours'}`);
-        }
-        if (minutes > 0) {
-            formattedString.push(`${minutes} ${minutes === 1 ? 'minute' : 'minutes'}`);
-        }
-        if (seconds > 0) {
-            formattedString.push(`${seconds} ${seconds === 1 ? 'seconds' : 'seconds'}`);
+                break;
         }
 
-        // Return the formatted string
-        return formattedString.join(" ");
-    }
-
-    public async handleInteraction(interaction: Interaction): Promise<ModMail | undefined> {
-        if (!interaction.isStringSelectMenu()) return;
-        if (interaction.customId != "mod_mail") return;
-
-        const guild: Guild | undefined = this.guilds.cache.get(interaction.values[0])
-        if (!guild) return
-
-        const mail = this.mail.create(interaction.user)
-        const thread = await mail.makeInitialThread(guild, interaction.user)
-        if (!thread) return
-
-        mail.setThread(thread)
-        await mail.commit()
-
-        if (!mail) {
-            interaction.reply("Something went wrong attempting to send your mail.")
-            return
-        }
-
-        const userMessage = interaction.channel?.messages.cache.find((message: Message) => message.author.id == interaction.user.id)
-        if (!userMessage) {
-            interaction.reply("Something went wrong attempting to send your mail.")
-            return
-        }
-
-        mail.send(userMessage)
-        return mail
+        await message.reply(`Thank you for your inquiry, your ticket ID is WL-${this.mail.total({ filter: TotalingFilter.All })}. The average response time is ${Utils.formatRelativeTime(await this.mail.getAverageResponseTime(userMembership[0].guild.id) * 1000)}.`)
     }
 
     public async replyToThread(message: Message) {
@@ -159,7 +99,7 @@ export default class ModMailClient extends Client {
 
         if (modMail.closed) return
 
-        modMail.reply({
+        await modMail.reply({
             content: `[${message.author.username}] ${message.content}`,
             files: message.attachments.map((attachment: Attachment) => attachment.url)
         })
