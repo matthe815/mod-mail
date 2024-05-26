@@ -7,7 +7,7 @@ export default class UnBanSlashCommand extends SlashCommand {
     constructor(manager: SlashCommandManager) {
         super(manager, {
             name: "threadunban",
-            description: "Ban the originator of the thread from making new ones."
+            description: "Unban the originator of the thread from making new ones."
         });
 
         this.builder.setDefaultMemberPermissions(0x4)
