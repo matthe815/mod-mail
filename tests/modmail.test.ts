@@ -1,17 +1,17 @@
 import ModMail, {ModMailData} from "../src/mail/ModMail";
-import ModMailManager from "../src/mail/ModMailManager";
 import ModMailClient from "../src/ModMailClient";
+import UserBan from "../src/bans/UserBan";
+import Utils from "../src/Utils";
 
 const mailClient = new ModMailClient({ intents: [] })
-const modMailManager = new ModMailManager(mailClient)
 
 test('Must construct new mail', () => {
-    const mail = ModMail.create(modMailManager)
+    const mail = ModMail.create(mailClient.mail)
     expect(true).toBe(true)
 })
 
 test('Must properly set mail values', () => {
-    const mail = ModMail.create(modMailManager)
+    const mail = ModMail.create(mailClient.mail)
     const testEntry: ModMailData = {
         closed: true,
         response_time: 12,
@@ -32,6 +32,29 @@ test('Must properly set mail values', () => {
 })
 
 test('Must properly get recent threads', () => {
-    expect(modMailManager.getRecentMail("123")).toBe(undefined)
-    expect(modMailManager.getThreadMail("123")).toBe(undefined)
+    expect(mailClient.mail.getRecentMail("123")).toBe(undefined)
+    expect(mailClient.mail.getThreadMail("123")).toBe(undefined)
+})
+
+test('Must start with no bans', () => {
+    expect(mailClient.bans.total("123")).toBe(0)
+})
+
+test('Must properly construct bans', () => {
+    const guildban = new UserBan(mailClient.bans, { user_id: "123", banned_by: "", guild_id: "123" })
+
+    expect(guildban.user).toBe("123")
+    expect(guildban.guild_id).toBe("123")
+    expect(guildban.banned_by).toBe("")
+})
+
+test('Must properly construct a relative time', () => {
+    let relativeTime = Utils.formatRelativeTime(4000)
+    expect(relativeTime).toBe("4 seconds")
+
+    relativeTime = Utils.formatRelativeTime(65_000)
+    expect(relativeTime).toBe("1 minute 5 seconds")
+
+    relativeTime = Utils.formatRelativeTime(3_782_000)
+    expect(relativeTime).toBe("1 hour 3 minutes 2 seconds")
 })
