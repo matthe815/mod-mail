@@ -22,6 +22,7 @@ export default class EventSystem {
                     const userMessage = interaction.channel.messages.cache.find((message: Message) => message.author.id == interaction.user.id)
                     if (!userMessage) return
 
+                    interaction.reply(`You have chosen to send mod mail to ${guild.name}.`)
                     await mail.relay(userMessage, RelayDirection.Staff)
                     break;
             }
