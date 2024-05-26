@@ -5,10 +5,9 @@ import {
     ClientOptions,
     GuildMember,
     Message,
-    StringSelectMenuBuilder,
-    ThreadChannel
+    StringSelectMenuBuilder
 } from "discord.js";
-import ModMailManager, {TotalingFilter} from "./mail/ModMailManager";
+import ModMailManager from "./mail/ModMailManager";
 import MariaDB, {Pool} from "mariadb"
 import Config from "../config/config.json"
 import ModMail, {RelayDirection} from "./mail/ModMail";
