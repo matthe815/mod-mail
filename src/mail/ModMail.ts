@@ -9,6 +9,7 @@ import {
 } from "discord.js";
 import {PoolConnection} from "mariadb";
 import Config from "../../config/config.json";
+import Utils from "../Utils";
 
 export default class ModMail {
     manager:       ModMailManager
@@ -53,6 +54,7 @@ export default class ModMail {
             }
         })
 
+        await user.send(`Thank you for your inquiry, your ticket ID is WL-${this.manager.total({ filter: TotalingFilter.All })}. The average response time is ${Utils.formatRelativeTime(await this.manager.getAverageResponseTime(guild.id) * 1000)}.`)
         this.setThread(thread)
     }
 
