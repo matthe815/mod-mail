@@ -1,6 +1,6 @@
 import SlashCommandManager from "../SlashCommandManager";
-import {CommandInteraction} from "discord.js/typings";
 import SlashCommand from "../SlashCommand";
+import {CommandInteraction} from "discord.js";
 
 export default class PingSlashCommand extends SlashCommand {
     constructor(manager: SlashCommandManager) {

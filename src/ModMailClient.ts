@@ -16,7 +16,9 @@ import Utils from "./Utils";
 import EventSystem from "./EventSystem";
 import GuildSettingsManager from "./settings/GuildSettingsManager";
 import SlashCommandManager from "./commands/SlashCommandManager";
-import {PingSlashCommand, SetThreadChannelCommand} from "./commands/SlashCommand";
+import PingSlashCommand from "./commands/commands/PingSlashCommand";
+import SetThreadChannelCommand from "./commands/commands/SetThreadSlashCommand";
+import BanSlashCommand from "./commands/commands/BanSlashCommand";
 
 export default class ModMailClient extends Client {
     mail: ModMailManager
@@ -37,6 +39,7 @@ export default class ModMailClient extends Client {
 
         this.commands.add(new PingSlashCommand(this.commands))
         this.commands.add(new SetThreadChannelCommand(this.commands))
+        this.commands.add(new BanSlashCommand(this.commands))
     }
 
     public async onDMReply(message: Message): Promise<void> {
