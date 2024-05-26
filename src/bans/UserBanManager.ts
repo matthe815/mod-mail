@@ -1,5 +1,6 @@
 import ModMailClient from "../ModMailClient";
 import UserBan, {UserBanData} from "./UserBan";
+import {Guild} from "discord.js";
 
 export default class UserBanManager {
     public client: ModMailClient
@@ -35,5 +36,9 @@ export default class UserBanManager {
 
     public has(user_id: string, guild_id: string): boolean {
         return this.bans.find((ban: UserBan) => ban.user == user_id && ban.guild_id == guild_id) != null
+    }
+
+    public total(guild: string): number {
+        return this.bans.filter((ban: UserBan) => ban.guild_id == guild).length
     }
 }
