@@ -61,4 +61,8 @@ client.on(Events.ThreadUpdate, async (last, now) => {
     }
 })
 
+client.on(Events.Error, (log) => {
+    console.log(log)
+})
+
 client.login(Config.token)
