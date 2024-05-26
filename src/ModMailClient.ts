@@ -14,10 +14,12 @@ import ModMail, {RelayDirection} from "./mail/ModMail";
 import UserBanManager from "./bans/UserBanManager";
 import Utils from "./Utils";
 import EventSystem from "./EventSystem";
+import GuildSettingsManager from "./settings/GuildSettingsManager";
 
 export default class ModMailClient extends Client {
     mail: ModMailManager
     settings: GuildSettingsManager
+    bans: UserBanManager
     db: Pool
 
     constructor(options: ClientOptions) {
