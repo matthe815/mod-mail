@@ -1,8 +1,9 @@
 import ModMailClient from "./src/ModMailClient";
-import {Events, ForumChannel, Interaction, Message, Partials} from "discord.js";
+import {Events, ForumChannel, GuildForumTag, Interaction, Message, Partials} from "discord.js";
 import Config from "./config/config.json"
 import {TotalingFilter} from "./src/mail/ModMailManager";
 import EventSystem from "./src/EventSystem";
+import {RelayDirection} from "./src/mail/ModMail";
 
 const client: ModMailClient = new ModMailClient({ intents: ["GuildMembers", "DirectMessages", "Guilds", "MessageContent", "GuildMessages"], partials: [Partials.Message, Partials.Channel, Partials.ThreadMember] })
 
@@ -36,27 +37,33 @@ client.on(Events.InteractionCreate, async (interaction: Interaction) => {
 })
 
 client.on(Events.ThreadUpdate, async (last, now) => {
+    if (!(now.parent instanceof ForumChannel)) return
+
     const mail = client.mail.getThreadMail(now.id)
+    let tagDiff: string[]
+    let threadParent: ForumChannel
+
     if (!mail) return
 
-    mail.setClosed(!!now.archived)
+    if (now.archived != undefined && mail.closed != now.archived) {
+        mail.setClosed(now.archived)
 
-    if (mail.closed) {
-        await mail.reply({
-            content: "This ticket has been closed, if you have any future inquiries please open another ticket."
-        })
+        if (mail.closed) {
+            await mail.relay({ content: "This ticket has been closed, if you have any future inquiries please open another ticket." }, RelayDirection.User)
+            return
+        }
+
+        await mail.relay({ content: `${now.parent?.guild.name} has reopened your ticket: ${now.name}` }, RelayDirection.User)
         return
     }
 
-    const newTags = now.appliedTags.filter((tag) => !last.appliedTags.includes(tag))
-    if (!(now.parent instanceof ForumChannel)) return
-
-    const threadParent: ForumChannel = now.parent
+    tagDiff = now.appliedTags.filter((tag: string) => !last.appliedTags.includes(tag))
+    threadParent = now.parent
 
     if (last.appliedTags.length != now.appliedTags.length) {
-       await mail.reply({
-            content: `This ticket has been assigned with the tag: ${threadParent.availableTags.find((tag) => tag.id == newTags[0])?.name}`
-        })
+       await mail.relay({
+            content: `This ticket has been assigned with the tag: ${threadParent.availableTags.find((tag: GuildForumTag) => tag.id == tagDiff[0])?.name}`
+       }, RelayDirection.User)
     }
 })
 
