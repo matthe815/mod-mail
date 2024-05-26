@@ -14,6 +14,11 @@ export default class EventSystem {
                     const guild: Guild | undefined = EventSystem.client.guilds.cache.get(interaction.values[0])
                     if (!guild) return
 
+                    if (this.client.bans.has(interaction.user.id, guild.id)) {
+                        interaction.reply("You cannot pick a server you've been banned from.")
+                        return
+                    }
+
                     const mail: ModMail = EventSystem.client.mail.create(interaction.user)
 
                     await mail.makeInitialThread(guild, interaction.user)
