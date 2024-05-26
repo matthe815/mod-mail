@@ -1,7 +1,6 @@
 import SlashCommandManager from "../SlashCommandManager";
-import {CommandInteraction, CommandInteractionOptionResolver} from "discord.js/typings";
 import SlashCommand from "../SlashCommand";
-import {ForumChannel, ChannelType} from "discord.js";
+import {ForumChannel, ChannelType, CommandInteraction, CommandInteractionOptionResolver} from "discord.js";
 
 export default class SetThreadChannelCommand extends SlashCommand {
     constructor(manager: SlashCommandManager) {
@@ -26,8 +25,7 @@ export default class SetThreadChannelCommand extends SlashCommand {
         if (!settings) return
 
         const options: CommandInteractionOptionResolver = interaction.options
-        const channel = options.getChannel("channel", true, [ChannelType.GuildForum])
-        if (!channel) return
+        const channel: ForumChannel = options.getChannel("channel", true, [ChannelType.GuildForum])
 
         settings.setModMailChannel(channel.id)
         settings.commit()
