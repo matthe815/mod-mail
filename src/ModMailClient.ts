@@ -15,10 +15,13 @@ import UserBanManager from "./bans/UserBanManager";
 import Utils from "./Utils";
 import EventSystem from "./EventSystem";
 import GuildSettingsManager from "./settings/GuildSettingsManager";
+import SlashCommandManager from "./commands/SlashCommandManager";
+import {PingSlashCommand, SetThreadChannelCommand} from "./commands/SlashCommand";
 
 export default class ModMailClient extends Client {
     mail: ModMailManager
     settings: GuildSettingsManager
+    commands: SlashCommandManager
     bans: UserBanManager
     db: Pool
 
@@ -29,7 +32,11 @@ export default class ModMailClient extends Client {
         this.mail = new ModMailManager(this)
         this.bans = new UserBanManager(this)
         this.settings = new GuildSettingsManager(this)
+        this.commands = new SlashCommandManager(this)
         this.db = MariaDB.createPool(Config.database)
+
+        this.commands.add(new PingSlashCommand(this.commands))
+        this.commands.add(new SetThreadChannelCommand(this.commands))
     }
 
     public async onDMReply(message: Message): Promise<void> {

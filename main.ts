@@ -13,6 +13,7 @@ client.on(Events.ClientReady, async () => {
     await client.mail.load()
     await client.bans.load()
     await client.settings.load()
+    await client.commands.load()
     console.log(`Loaded ${client.mail.total({ filter: TotalingFilter.Open })} pieces of mail.`)
 
     let count = 0;
@@ -25,6 +26,7 @@ client.on(Events.ClientReady, async () => {
 
     console.log(`Cached ${count} oversized servers.`)
     console.log(`Loaded ${client.settings.total()} server settings`)
+    console.log(`Loaded ${client.commands.total()} commands`)
 })
 
 client.on(Events.GuildCreate, (guild: Guild) => {
