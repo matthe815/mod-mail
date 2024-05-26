@@ -1,6 +1,7 @@
 import ModMailManager, { TotalingFilter } from "./ModMailManager";
 import {Snowflake} from "nodejs-snowflake";
 import {
+    Attachment,
     Guild, Message,
     MessageCreateOptions,
     ThreadChannel,
@@ -8,7 +9,6 @@ import {
 } from "discord.js";
 import {PoolConnection} from "mariadb";
 import Config from "../../config/config.json";
-import {Attachment} from "discord.js/typings";
 
 export default class ModMail {
     manager:       ModMailManager

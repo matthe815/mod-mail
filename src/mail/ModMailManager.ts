@@ -1,8 +1,7 @@
 import ModMailClient from "../ModMailClient";
 import ModMail, {ModMailData} from "./ModMail";
 import {PoolConnection} from "mariadb";
-import {Channel, Guild, User} from "discord.js";
-import Config from "../../config/config.json"
+import {User} from "discord.js";
 
 export default class ModMailManager {
     client: ModMailClient

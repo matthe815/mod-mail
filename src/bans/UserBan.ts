@@ -1,4 +1,3 @@
-import ModMailClient from "../ModMailClient";
 import UserBanManager from "./UserBanManager";
 
 export default class UserBan {

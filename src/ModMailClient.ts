@@ -6,8 +6,7 @@ import {
     GuildMember,
     Message,
     StringSelectMenuBuilder,
-    ThreadChannel,
-    User
+    ThreadChannel
 } from "discord.js";
 import ModMailManager, {TotalingFilter} from "./mail/ModMailManager";
 import MariaDB, {Pool} from "mariadb"
@@ -42,7 +41,6 @@ export default class ModMailClient extends Client {
         }
 
         let mail:             ModMail | undefined
-        let thread:           ThreadChannel | undefined
         let stringMenu:       StringSelectMenuBuilder | undefined
         let actionRowBuilder: ActionRowBuilder<StringSelectMenuBuilder> | undefined
 
@@ -52,9 +50,8 @@ export default class ModMailClient extends Client {
                 return;
             case 1:
                 mail = this.mail.create(message.author)
-                await mail.makeInitialThread(userMembership[0].guild, message.author)
-                if (!thread) return
 
+                await mail.makeInitialThread(userMembership[0].guild, message.author)
                 await mail.commit()
                 await mail.relay(message, RelayDirection.Staff)
                 break;
