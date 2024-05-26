@@ -13,7 +13,7 @@ export default class Utils {
             )
     }
 
-    public static formatRelativeTime(milliseconds: number) {
+    public static formatRelativeTime(milliseconds: number): string {
         // Create a Luxon Duration object from milliseconds
         const duration = Duration.fromMillis(milliseconds).rescale();
 
