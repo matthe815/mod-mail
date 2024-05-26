@@ -20,9 +20,15 @@ export default class UnBanSlashCommand extends SlashCommand {
         const currentMail = this.manager.client.mail.getThreadMail(interaction.channel.id)
         if (!currentMail) return
 
+        currentMail.setClosed(true)
+        currentMail.commit()
+
         this.manager.client.bans.unban(currentMail.user_id, interaction.guildId || "")
 
         currentMail.relay({ content: `You have been unbanned from sending Mod Mail messages in ${interaction.guild?.name}.` }, RelayDirection.User)
-        interaction.reply({ content: `The user has been unbanned from making mod mail.`, flags: 64 })
+        interaction.reply({ content: `The user has been unbanned from making mod mail.`, flags: 64 }).then(() => {
+            if (!interaction.channel || !interaction.channel.isThread()) return
+            interaction.channel.setArchived(true)
+        })
     }
 }
