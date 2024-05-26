@@ -1,4 +1,4 @@
-create table modmail_bans
+create table if not exists modmail_bans
 (
     id int auto_increment
         primary key,
@@ -7,7 +7,7 @@ create table modmail_bans
     banned_by varchar(36) null
 );
 
-create table modmail_mail
+create table if not exists modmail_mail
 (
     mail_uuid varchar(36) not null
         primary key,
@@ -21,7 +21,7 @@ create table modmail_mail
         unique (mail_uuid)
 );
 
-create table modmail_settings
+create table if not exists modmail_settings
 (
     guild_id varchar(36) not null
         primary key,
