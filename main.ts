@@ -47,6 +47,7 @@ client.on(Events.ThreadUpdate, async (last, now) => {
 
     if (now.archived != undefined && mail.closed != now.archived) {
         mail.setClosed(now.archived)
+        await mail.commit()
 
         if (mail.closed) {
             await mail.relay({ content: "This ticket has been closed, if you have any future inquiries please open another ticket." }, RelayDirection.User)
