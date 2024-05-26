@@ -19,7 +19,7 @@ export default class ModMailManager {
         if (guildMail.length == 0) return 1;
 
         const totalResponseTimes: number[] = guildMail.map((mail: ModMail) => mail.response_time)
-        return totalResponseTimes.reduce((mail_a: number, mail_b: number) => mail_a + mail_b) / (totalResponseTimes.length - 1)
+        return totalResponseTimes.reduce((mail_a: number, mail_b: number) => mail_a + mail_b) / totalResponseTimes.length
     }
 
     public getRecentMail(user: string): ModMail | undefined {
