@@ -1,6 +1,5 @@
 import ModMailClient from "../ModMailClient";
 import UserBan, {UserBanData} from "./UserBan";
-import {Guild} from "discord.js";
 
 export default class UserBanManager {
     public client: ModMailClient
