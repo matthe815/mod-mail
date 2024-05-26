@@ -75,7 +75,7 @@ type GetTotalingOptions = {
     filter: TotalingFilter
 }
 
-enum TotalingFilter {
+export enum TotalingFilter {
     All,
     Open,
     Closed,

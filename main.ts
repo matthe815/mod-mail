@@ -1,6 +1,8 @@
 import ModMailClient from "./src/ModMailClient";
-import {Events, ForumChannel, Message, Partials, ThreadChannel} from "discord.js";
+import {Events, ForumChannel, Interaction, Message, Partials} from "discord.js";
 import Config from "./config/config.json"
+import {TotalingFilter} from "./src/mail/ModMailManager";
+import EventSystem from "./src/EventSystem";
 
 const client: ModMailClient = new ModMailClient({ intents: ["GuildMembers", "DirectMessages", "Guilds", "MessageContent", "GuildMessages"], partials: [Partials.Message, Partials.Channel, Partials.ThreadMember] })
 
@@ -9,14 +11,18 @@ client.on(Events.ClientReady, async () => {
 
     await client.mail.load()
     await client.bans.load()
-    console.log(`Loaded ${client.mail.totalOpen()} pieces of mail.`)
+    console.log(`Loaded ${client.mail.total({ filter: TotalingFilter.Open })} pieces of mail.`)
 })
 
 client.on(Events.MessageCreate, async (message: Message) => {
     if (message.author.bot) return
 
-    if (message.channel.isDMBased()) await client.replyToDM(message)
+    if (message.channel.isDMBased()) await client.onDMReply(message)
     if (message.channel.isThread()) await client.replyToThread(message)
+})
+
+client.on(Events.InteractionCreate, async (interaction: Interaction) => {
+    await EventSystem.onInteraction(interaction)
 })
 
 client.on(Events.ThreadUpdate, async (last, now) => {
@@ -38,7 +44,7 @@ client.on(Events.ThreadUpdate, async (last, now) => {
     const threadParent: ForumChannel = now.parent
 
     if (last.appliedTags.length != now.appliedTags.length) {
-        mail.reply({
+       await mail.reply({
             content: `This ticket has been assigned with the tag: ${threadParent.availableTags.find((tag) => tag.id == newTags[0])?.name}`
         })
     }
