@@ -23,7 +23,8 @@ client.on(Events.ClientReady, async () => {
         count++
     }
 
-    console.log(`Cached ${count} oversized servers.`);
+    console.log(`Cached ${count} oversized servers.`)
+    console.log(`Loaded ${client.settings.total()} server settings`)
 })
 
 client.on(Events.MessageCreate, async (message: Message) => {

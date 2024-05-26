@@ -42,7 +42,7 @@ export default class ModMail {
     }
 
     public async makeInitialThread(guild: Guild, user: User): Promise<void> {
-        const forumChannel = guild.channels.cache.get(Config.modMailChannel)
+        const forumChannel = await this.manager.client.settings.get(guild)?.getModChannel().catch((e) => console.log(e))
         let thread: ThreadChannel
 
         if (!forumChannel || !forumChannel.isThreadOnly()) return
