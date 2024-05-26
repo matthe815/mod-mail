@@ -20,14 +20,15 @@ export default class BanSlashCommand extends SlashCommand {
         const currentMail = this.manager.client.mail.getThreadMail(interaction.channel.id)
         if (!currentMail) return
 
-        interaction.channel.setArchived(true)
-
         currentMail.setClosed(true)
         currentMail.commit()
 
         this.manager.client.bans.ban(currentMail.user_id, interaction.guildId || "", interaction.user.id)
 
         currentMail.relay({ content: `You have been banned from sending Mod Mail messages in ${interaction.guild?.name}.` }, RelayDirection.User)
-        interaction.reply({ content: `The user has been banned from making mod mail.`, flags: 64})
+        interaction.reply({ content: `The user has been banned from making mod mail.`, flags: 64}).then(() => {
+            if (!interaction.channel || !interaction.channel.isThread()) return
+            interaction.channel.setArchived(true)
+        })
     }
 }
