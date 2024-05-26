@@ -24,7 +24,7 @@ export default class UserBanManager {
         const connection = await this.client.db.getConnection()
         await connection.execute("DELETE FROM modmail_bans WHERE user_id = ? AND guild_id = ?", [user_id, guild_id])
 
-        this.bans.push(new UserBan(this, { user_id, guild_id, banned_by: "" }))
+        this.bans.splice(this.bans.findIndex((ban) => ban.user == user_id && ban.guild_id == guild_id))
     }
 
     public async ban(user_id: string, guild_id: string, banner?: string) {
