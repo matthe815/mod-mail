@@ -56,6 +56,23 @@ export default class ModMail {
         this.setThread(thread)
     }
 
+    public async close(): Promise<void> {
+        this.setClosed(true)
+        await this.commit()
+
+        await this.relay({ content: "This ticket has been closed, if you have any future inquiries please open another ticket." }, RelayDirection.User)
+    }
+
+    public async open(): Promise<void> {
+        this.setClosed(false)
+        await this.commit()
+
+        let thread: ThreadChannel | undefined = await this.getThread()
+        if (!thread) return
+
+        await this.relay({ content: `${thread.guild.name} has reopened your ticket. ${thread.name}` }, RelayDirection.User)
+    }
+
     public setClosed(status: boolean): ModMail {
         this.closed = status
         return this;
@@ -105,7 +122,7 @@ export default class ModMail {
             await this.commit()
         }
 
-        const user = await this.getUser()
+        const user: User = await this.getUser()
         if (user == undefined) return
 
         await user.send(message)
@@ -117,7 +134,7 @@ export default class ModMail {
 
         await thread.send({
             content: message.content?.length == 0 ? "No message provided" : message.content?.replace(/(@everyone|@here)/g, '[@]everyone'),
-            files:  message.files //message.attachments.map((attachment: Attachment) => attachment.url)
+            files:  message.files
         })
     }
 
