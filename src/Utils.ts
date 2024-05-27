@@ -14,6 +14,8 @@ export default class Utils {
     }
 
     public static formatRelativeTime(milliseconds: number): string {
+        if (Number.isNaN(milliseconds) || milliseconds <= 0) return "unknown"
+
         const duration: Duration = Duration.fromMillis(milliseconds).rescale();
 
         const hours: number = duration.hours;
