@@ -57,4 +57,11 @@ test('Must properly construct a relative time', () => {
 
     relativeTime = Utils.formatRelativeTime(3_782_000)
     expect(relativeTime).toBe("1 hour 3 minutes 2 seconds")
+
+    relativeTime = Utils.formatRelativeTime(0)
+    expect(relativeTime).toBe("unknown")
+
+    relativeTime = Utils.formatRelativeTime(NaN)
+    expect(relativeTime).toBe("unknown")
 })
+
