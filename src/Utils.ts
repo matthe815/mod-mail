@@ -1,5 +1,7 @@
 import {Duration} from "luxon";
 import {GuildMember, StringSelectMenuBuilder, StringSelectMenuOptionBuilder, User} from "discord.js";
+import ModMailClient from "./ModMailClient";
+import GuildSettings from "./settings/GuildSettings";
 
 export default class Utils {
     public static makeUserMembershipList(membershipList: GuildMember[]): StringSelectMenuBuilder {
@@ -34,6 +36,9 @@ export default class Utils {
         const memberships: GuildMember[] = []
 
         for (const guild of user.client.guilds.cache.values()) {
+            const settings: GuildSettings | undefined = (guild.client as ModMailClient).settings.get(guild)
+            if (!settings || settings.modmail_channel.length == 0) continue
+
             const member = await guild.members.fetch(user.id).catch((e) => console.log(e))
             if (!member) continue
 
