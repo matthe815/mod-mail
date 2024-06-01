@@ -48,8 +48,6 @@ export default class ModMailClient extends Client {
         const userMembership: GuildMember[] = (await Utils.getMembership(message.author)).filter((member: GuildMember) => !this.bans.has(member.id, member.guild.id))
         const currentMail = this.mail.getRecentMail(message.author.id)
 
-        console.log(userMembership)
-
         if (currentMail != undefined) {
             await currentMail.relay(message, RelayDirection.Staff)
             return
