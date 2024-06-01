@@ -121,6 +121,8 @@ export default class ModMail {
     public async reply(message: MessageCreateOptions) {
         if (this.response_time == 0) {
             this.response_time = (new Date().getTime() - this.created_at) / 1000
+
+            await this.manager.setThreadResponseTime(this)
             await this.commit()
         }
 

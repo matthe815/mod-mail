@@ -3,7 +3,7 @@ import {Events, ForumChannel, Guild, GuildForumTag, Interaction, Message, Partia
 import Config from "./config/config.json"
 import {TotalingFilter} from "./src/mail/ModMailManager";
 import EventSystem from "./src/EventSystem";
-import {RelayDirection} from "./src/mail/ModMail";
+import ModMail, {RelayDirection} from "./src/mail/ModMail";
 
 const client: ModMailClient = new ModMailClient({ intents: ["GuildMembers", "DirectMessages", "Guilds", "MessageContent", "GuildMessages"], partials: [Partials.Message, Partials.Channel, Partials.ThreadMember] })
 
@@ -68,6 +68,12 @@ client.on(Events.ThreadUpdate, async (last, now) => {
             content: `This ticket has been assigned with the tag: ${threadParent.availableTags.find((tag: GuildForumTag) => tag.id == tagDiff[0])?.name}`
        }, RelayDirection.User)
     }
+})
+
+client.on(Events.ThreadMembersUpdate, async (added, removed, thread) => {
+    const mail: ModMail | undefined = client.mail.getThreadMail(thread.id)
+    if (!mail) return
+    await mail.relay({ content: `**[${added.first()?.guildMember?.roles.highest.name}] ${added.first()?.user?.displayName} entered the ticket.**` }, RelayDirection.User)
 })
 
 client.on(Events.Error, (log) => {

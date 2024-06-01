@@ -1,7 +1,8 @@
 import ModMailClient from "../ModMailClient";
 import ModMail, {ModMailData} from "./ModMail";
 import {PoolConnection} from "mariadb";
-import {User} from "discord.js";
+import {ThreadChannel, User} from "discord.js";
+import Utils from "../Utils";
 
 export default class ModMailManager {
     client: ModMailClient
@@ -11,6 +12,12 @@ export default class ModMailManager {
     constructor(client: ModMailClient) {
         this.client = client
         this.mail = []
+    }
+
+    public async setThreadResponseTime(mail: ModMail): Promise<void> {
+        const thread: ThreadChannel | undefined = await mail.getThread()
+        if (!thread || !thread.isThread()) return
+        await thread.parent?.setTopic(`**The average response time is currently ${Utils.formatRelativeTime(await this.getAverageResponseTime(thread.guild.id))}`)
     }
 
     public async getAverageResponseTime(guild: string): Promise<number> {
