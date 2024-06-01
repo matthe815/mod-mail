@@ -1,8 +1,9 @@
 import ModMailClient from "../ModMailClient";
 import ModMail, {ModMailData} from "./ModMail";
 import {PoolConnection} from "mariadb";
-import {ThreadChannel, User} from "discord.js";
+import {ForumChannel, ThreadChannel, User} from "discord.js";
 import Utils from "../Utils";
+import GuildSettings from "../settings/GuildSettings";
 
 export default class ModMailManager {
     client: ModMailClient
@@ -15,9 +16,16 @@ export default class ModMailManager {
     }
 
     public async setThreadResponseTime(mail: ModMail): Promise<void> {
-        const thread: ThreadChannel | undefined = await mail.getThread()
-        if (!thread || !thread.isThread()) return
-        await thread.parent?.setTopic(`**The average response time is currently ${Utils.formatRelativeTime(await this.getAverageResponseTime(thread.guild.id))}`)
+        const thread: ThreadChannel<boolean> | undefined = await mail.getThread()
+        if (!thread) return
+
+        const guildSettings: GuildSettings | undefined = this.client.settings.get(thread.guild)
+        if (!guildSettings) return
+
+        const modmailChannel: ForumChannel | undefined = await guildSettings.getModChannel()
+        if (!modmailChannel) return
+
+        await modmailChannel.setTopic(`**The average response time is currently ${Utils.formatRelativeTime(await this.getAverageResponseTime(thread.guild.id) * 1000)}**`)
     }
 
     public async getAverageResponseTime(guild: string): Promise<number> {
