@@ -72,7 +72,7 @@ client.on(Events.ThreadUpdate, async (last, now) => {
 
 client.on(Events.ThreadMembersUpdate, async (added, removed, thread) => {
     const mail: ModMail | undefined = client.mail.getThreadMail(thread.id)
-    if (!mail) return
+    if (!mail || mail.anonymous) return
     await mail.relay({ content: `**[${added.first()?.guildMember?.roles.highest.name}] ${added.first()?.user?.displayName} entered the ticket.**` }, RelayDirection.User)
 })
 
