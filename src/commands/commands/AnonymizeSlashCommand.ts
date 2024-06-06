@@ -20,8 +20,13 @@ export default class AnonymizeSlashCommand extends SlashCommand {
         const currentMail = this.manager.client.mail.getThreadMail(interaction.channel.id)
         if (!currentMail) return
 
-        currentMail.setAnonymous(true)
+        currentMail.setAnonymous(!currentMail.anonymous)
         currentMail.commit()
-        interaction.reply({ content: `This thread has been made anonymous by ${interaction.user.displayName}.`})
+
+        if (currentMail.anonymous) {
+            interaction.reply({ content: `This thread has been made anonymous by ${interaction.user.displayName}.`})
+        } else {
+            interaction.reply({ content: `This thread has been made unanonymous by ${interaction.user.displayName}.`})
+        }
     }
 }
