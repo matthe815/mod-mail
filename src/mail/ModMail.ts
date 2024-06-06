@@ -21,6 +21,7 @@ export default class ModMail {
     updated_at:    number = 0
     response_time: number = 0
     closed:        boolean = false
+    anonymous:     boolean = false
 
     constructor(manager: ModMailManager, entry: ModMailData) {
         this.manager = manager
@@ -37,7 +38,8 @@ export default class ModMail {
             user_id: "",
             created_at: new Date().getTime(),
             updated_at: new Date().getTime(),
-            closed: false
+            closed: false,
+            anonymous: false
         })
     }
 
@@ -50,7 +52,7 @@ export default class ModMail {
         thread = await forumChannel.threads.create({
             name: `Ticket WL-${this.manager.total({ filter: TotalingFilter.All })} - ${user.username}`,
             message: {
-                content: `${user.username} has opened a mod-mail ticket.`
+                content: `${user.username} [${user.id}] has opened a mod-mail ticket.`
             }
         })
 
@@ -77,12 +79,17 @@ export default class ModMail {
 
     public setClosed(status: boolean): ModMail {
         this.closed = status
-        return this;
+        return this
+    }
+
+    public setAnonymous(state: boolean): ModMail {
+        this.anonymous = state
+        return this
     }
 
     public setThread(thread: ThreadChannel | string): ModMail {
         this.thread_id = (thread instanceof ThreadChannel) ? thread.id : thread;
-        return this;
+        return this
     }
 
     public async getThread(): Promise<ThreadChannel | undefined> {
@@ -150,11 +157,12 @@ export default class ModMail {
         this.updated_at = entry.updated_at
         this.response_time = entry.response_time
         this.closed = entry.closed
+        this.anonymous = entry.anonymous
     }
 
     public async commit() {
         const connection: PoolConnection = await this.manager.client.db.getConnection()
-        await connection.execute("INSERT INTO modmail_mail(mail_uuid, thread_id, user_id, response_time, closed) VALUES (?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE closed = VALUES(closed), response_time = VALUES(response_time)", [ this.mail_uuid, this.thread_id, this.user_id, this.response_time, this.closed ])
+        await connection.execute("INSERT INTO modmail_mail(mail_uuid, thread_id, user_id, response_time, closed, anonymous) VALUES (?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE closed = VALUES(closed), response_time = VALUES(response_time), anonymous = VALUES(anonymous)", [ this.mail_uuid, this.thread_id, this.user_id, this.response_time, this.closed, this.anonymous ])
     }
 }
 
@@ -171,4 +179,5 @@ export type ModMailData = {
     updated_at: number
     response_time:   number
     closed:     boolean
+    anonymous:  boolean
 }

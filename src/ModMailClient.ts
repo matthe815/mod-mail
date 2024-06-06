@@ -81,14 +81,16 @@ export default class ModMailClient extends Client {
     }
 
     public async onThreadReply(message: Message): Promise<void> {
-        const currentMail = this.mail.getThreadMail(message.channel.id)
+        const currentMail: ModMail | undefined = this.mail.getThreadMail(message.channel.id)
 
         if (!currentMail) return
         if (!message.guild || !message.channel.isThread()) return
         if (currentMail.closed) return
 
+        const staffUsername: string = `[${message.author.username}]`
+
         await currentMail.relay({
-            content: `[${message.author.username}] ${message.content}`,
+            content: `${!currentMail.anonymous ? staffUsername : ""} ${message.content}`,
             files: message.attachments.map((attachment: Attachment) => attachment.url)
         }, RelayDirection.User)
     }
