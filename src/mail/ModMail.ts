@@ -52,7 +52,7 @@ export default class ModMail {
         thread = await forumChannel.threads.create({
             name: `Ticket WL-${this.manager.total({ filter: TotalingFilter.All })} - ${user.username}`,
             message: {
-                content: `${user.username} [${user.id}] has opened a mod-mail ticket.`
+                content: `${user.username} > <@${user.id}> [${user.id}] has opened a mod-mail ticket.`
             }
         })
 

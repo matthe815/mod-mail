@@ -60,10 +60,10 @@ client.on(Events.ThreadUpdate, async (last, now) => {
         return
     }
 
-    tagDiff = now.appliedTags.filter((tag: string) => !last.appliedTags.includes(tag))
+    tagDiff = now.appliedTags.filter ((tag: string) => !last.appliedTags.includes(tag))
     threadParent = now.parent
 
-    if (last.appliedTags.length != now.appliedTags.length) {
+    if (last.appliedTags.length != now.appliedTags.length && now.appliedTags.length != 0) {
        await mail.relay({
             content: `This ticket has been assigned with the tag: ${threadParent.availableTags.find((tag: GuildForumTag) => tag.id == tagDiff[0])?.name}`
        }, RelayDirection.User)
