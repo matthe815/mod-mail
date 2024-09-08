@@ -42,7 +42,9 @@ export default class EventSystem {
                         return
                     }
 
-                    const targetGuild: Guild | null = this.client.guilds.resolve(?.guild_id || '')
+                    const targetGuild: Guild | null = this.client.guilds.resolve(mail.guild_id || '')
+                    if (!targetGuild) {return}
+                    
                     await mail.makeInitialThread(targetGuild, interaction.user)
                     await mail.commit()
                     await mail.relay(userMessage, RelayDirection.Staff)
