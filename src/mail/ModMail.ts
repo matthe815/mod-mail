@@ -17,6 +17,7 @@ export default class ModMail {
     mail_uuid:     string = ""
     thread_id:     string = ""
     user_id:       string = ""
+    guild_id?:     string
     created_at:    number = 0
     updated_at:    number = 0
     response_time: number = 0

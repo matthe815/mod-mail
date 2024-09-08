@@ -6,6 +6,9 @@ export default class EventSystem {
     public static client: ModMailClient
 
     public static async onInteraction(interaction: Interaction): Promise<void> {
+        let mail:        ModMail | null = null
+        let userMessage: Message<boolean> | undefined
+
         if (interaction.isStringSelectMenu()) {
             switch (interaction.customId) {
                 case "mod_mail":
@@ -19,17 +22,27 @@ export default class EventSystem {
                         return
                     }
 
-                    const mail: ModMail = EventSystem.client.mail.create(interaction.user)
+                    mail = EventSystem.client.mail.create(interaction.user)
+                    mail.guild_id = guild.id
 
-                    await mail.makeInitialThread(guild, interaction.user)
-                    await mail.commit()
-
-                    const userMessage = interaction.channel.messages.cache.find((message: Message) => message.author.id == interaction.user.id)
+                    userMessage = interaction.channel.messages.cache.find((message: Message) => message.author.id == interaction.user.id)
                     if (!userMessage) return
 
                     interaction.reply(`You have chosen to send mod mail to ${guild.name}.`)
-                    await mail.relay(userMessage, RelayDirection.Staff)
+                    await this.client.onMailOpen(userMessage)
                     break;
+                case "mod_mail_open":
+                    if (!interaction.channel || !interaction.channel.isDMBased()) return
+                    mail = EventSystem.client.mail.create(interaction.user)
+
+                    userMessage = interaction.channel.messages.cache.find((message: Message) => message.author.id == interaction.user.id)
+                    if (!userMessage) return
+
+                    const targetGuild: Guild = await this.client.guilds.fetch(mail.guild_id || '')
+                    await mail.makeInitialThread(targetGuild, interaction.user)
+                    await mail.commit()
+                    await mail.relay(userMessage, RelayDirection.Staff)
+                    break
             }
         }
         if (interaction.isCommand()) {

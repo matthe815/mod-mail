@@ -65,10 +65,8 @@ export default class ModMailClient extends Client {
                 return;
             case 1:
                 mail = this.mail.create(message.author)
-
-                await mail.makeInitialThread(userMembership[0].guild, message.author)
-                await mail.commit()
-                await mail.relay(message, RelayDirection.Staff)
+                mail.guild_id = userMembership[0].id
+                await this.onMailOpen(message)
                 break;
             default:
                 stringMenu = (Utils.makeUserMembershipList(userMembership)).setCustomId("mod_mail")
@@ -95,5 +93,15 @@ export default class ModMailClient extends Client {
             content: `${!currentMail.anonymous ? staffUsername : ""} ${message.content}`,
             files: message.attachments.map((attachment: Attachment) => attachment.url)
         }, RelayDirection.User)
+    }
+
+    async onMailOpen(message: Message): Promise<void> {
+        const stringMenu:       StringSelectMenuBuilder = (Utils.makeDefaultOptions()).setCustomId("mod_mail_open")
+        const actionRowBuilder: ActionRowBuilder<StringSelectMenuBuilder> = (new ActionRowBuilder<StringSelectMenuBuilder>()).addComponents(stringMenu)
+
+        await message.reply({
+            content: "What are you contacting the server in regards to today?",
+            components: [actionRowBuilder]
+        })
     }
 }

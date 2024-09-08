@@ -15,6 +15,19 @@ export default class Utils {
             )
     }
 
+    public static makeDefaultOptions(): StringSelectMenuBuilder {
+        const defaultOptionList: string[] = ['Reporting a user in the server', 'Inquiry about punishments']
+
+        return new StringSelectMenuBuilder()
+            .addOptions(
+                defaultOptionList.map((option: string, index: number) => {
+                    return new StringSelectMenuOptionBuilder()
+                        .setLabel(option)
+                        .setValue(index.toString())
+                })
+            )
+    }
+
     public static formatRelativeTime(milliseconds: number): string {
         if (Number.isNaN(milliseconds) || milliseconds <= 0) return "unknown"
 
