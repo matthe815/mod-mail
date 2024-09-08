@@ -16,7 +16,7 @@ export default class Utils {
     }
 
     public static makeDefaultOptions(): StringSelectMenuBuilder {
-        const defaultOptionList: string[] = ['Reporting a user in the server', 'Inquiry about punishments']
+        const defaultOptionList: string[] = ['Report a user in the server', 'Inquire about punishments']
 
         return new StringSelectMenuBuilder()
             .addOptions(
