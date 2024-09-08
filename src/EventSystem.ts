@@ -40,7 +40,14 @@ export default class EventSystem {
 
                     const targetGuild: Guild = await this.client.guilds.fetch(mail.guild_id || '')
                     console.log(targetGuild)
+
                     await mail.makeInitialThread(targetGuild, interaction.user)
+
+                    if (!mail.thread_id) {
+                        interaction.reply('Failed to create thread.')
+                        return
+                    }
+
                     await mail.commit()
                     await mail.relay(userMessage, RelayDirection.Staff)
 
