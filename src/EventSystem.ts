@@ -33,12 +33,10 @@ export default class EventSystem {
                     break;
                 case "mod_mail_open":
                     if (!interaction.channel || !interaction.channel.isDMBased()) return
-                    mail = EventSystem.client.mail.create(interaction.user)
-
                     userMessage = interaction.channel.messages.cache.find((message: Message) => message.author.id == interaction.user.id)
                     if (!userMessage) return
 
-                    const targetGuild: Guild | null = this.client.guilds.resolve(mail.guild_id || '')
+                    const targetGuild: Guild | null = this.client.guilds.resolve(this.client.mail.getRecentMail(interaction.user.id)?.guild_id || '')
                     if (!targetGuild) {
                         interaction.reply('Failed to resolve guild')
                         return
