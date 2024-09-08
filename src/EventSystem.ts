@@ -37,17 +37,13 @@ export default class EventSystem {
                     if (!userMessage) return
 
                     mail = this.client.mail.getRecentMail(interaction.user.id) || null
-                    console.log(mail)
                     if (!mail) {
                         interaction.reply('Failed to create mail')
                         return
                     }
 
                     const targetGuild: Guild | null = this.client.guilds.resolve(mail.guild_id || '')
-                    if (!targetGuild) {
-                        interaction.reply('Failed to get guild.')
-                        return
-                    }
+                    if (!targetGuild) {return}
 
                     await mail.makeInitialThread(targetGuild, interaction.user)
                     await mail.commit()

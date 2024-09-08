@@ -65,7 +65,7 @@ export default class ModMailClient extends Client {
                 return;
             case 1:
                 mail = this.mail.create(message.author)
-                mail.guild_id = userMembership[0].id
+                mail.guild_id = userMembership[0].guild.id
                 await this.onMailOpen(message)
                 break;
             default:
