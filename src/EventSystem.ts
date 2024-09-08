@@ -34,7 +34,6 @@ export default class EventSystem {
                     break;
                 case "mod_mail_open":
                     if (!interaction.channel || !interaction.channel.isDMBased()) return
-                    interaction.deferReply()
 
                     mail = this.client.mail.getRecentMail(interaction.user.id) || null
                     if (!mail || !mail.guild || !mail.origMessage) {
@@ -45,12 +44,12 @@ export default class EventSystem {
                     userMessage = mail.origMessage
                     if (!userMessage) return
 
+                    await interaction.reply('Your modmail has been submitted.')
                     await mail.makeInitialThread(mail.guild, interaction.user)
                     await mail.commit()
                     await mail.relay(userMessage, RelayDirection.Staff)
                     await mail.relay({ content: `This user would like to: \`${interaction.values[0]}\`` }, RelayDirection.Staff)
 
-                    interaction.reply('Your modmail has been submitted.')
                     break
             }
         }
