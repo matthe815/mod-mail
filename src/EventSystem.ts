@@ -39,9 +39,12 @@ export default class EventSystem {
                     if (!userMessage) return
 
                     const targetGuild: Guild = await this.client.guilds.fetch(mail.guild_id || '')
+                    console.log(targetGuild)
                     await mail.makeInitialThread(targetGuild, interaction.user)
                     await mail.commit()
                     await mail.relay(userMessage, RelayDirection.Staff)
+
+                    interaction.reply('Your mod-mail has been sent.')
                     break
             }
         }
