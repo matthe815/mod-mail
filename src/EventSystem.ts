@@ -34,6 +34,7 @@ export default class EventSystem {
                     break;
                 case "mod_mail_open":
                     if (!interaction.channel || !interaction.channel.isDMBased()) return
+                    interaction.deferReply()
 
                     mail = this.client.mail.getRecentMail(interaction.user.id) || null
                     if (!mail || !mail.guild || !mail.origMessage) {
