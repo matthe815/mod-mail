@@ -23,7 +23,7 @@ export default class Utils {
                 defaultOptionList.map((option: string, index: number) => {
                     return new StringSelectMenuOptionBuilder()
                         .setLabel(option)
-                        .setValue(index.toString())
+                        .setValue(option)
                 })
             )
     }
