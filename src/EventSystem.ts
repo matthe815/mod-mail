@@ -36,18 +36,14 @@ export default class EventSystem {
                     userMessage = interaction.channel.messages.cache.find((message: Message) => message.author.id == interaction.user.id)
                     if (!userMessage) return
 
-                    const targetGuild: Guild | null = this.client.guilds.resolve(this.client.mail.getRecentMail(interaction.user.id)?.guild_id || '')
-                    if (!targetGuild) {
-                        interaction.reply('Failed to resolve guild')
+                    mail = this.client.mail.getRecentMail(interaction.user.id) || null
+                    if (!mail) {
+                        interaction.reply('Failed to create mail')
                         return
                     }
 
+                    const targetGuild: Guild | null = this.client.guilds.resolve(?.guild_id || '')
                     await mail.makeInitialThread(targetGuild, interaction.user)
-                    if (!mail.thread_id) {
-                        interaction.reply('Failed to create thread.')
-                        return
-                    }
-
                     await mail.commit()
                     await mail.relay(userMessage, RelayDirection.Staff)
 
