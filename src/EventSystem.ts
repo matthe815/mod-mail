@@ -47,6 +47,7 @@ export default class EventSystem {
                     await mail.makeInitialThread(mail.guild, interaction.user)
                     await mail.commit()
                     await mail.relay(userMessage, RelayDirection.Staff)
+                    interaction.reply('Your modmail has been submitted.')
                     break
             }
         }
