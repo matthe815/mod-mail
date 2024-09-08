@@ -23,33 +23,30 @@ export default class EventSystem {
                     }
 
                     mail = EventSystem.client.mail.create(interaction.user)
-                    mail.guild_id = guild.id
+                    mail.guild = guild
 
                     userMessage = interaction.channel.messages.cache.find((message: Message) => message.author.id == interaction.user.id)
                     if (!userMessage) return
+                    mail.origMessage = userMessage
 
                     interaction.reply(`You have chosen to send mod mail to ${guild.name}.`)
                     await this.client.onMailOpen(userMessage)
                     break;
                 case "mod_mail_open":
                     if (!interaction.channel || !interaction.channel.isDMBased()) return
-                    userMessage = interaction.channel.messages.cache.find((message: Message) => message.author.id == interaction.user.id)
-                    if (!userMessage) return
 
                     mail = this.client.mail.getRecentMail(interaction.user.id) || null
-                    if (!mail) {
+                    if (!mail || !mail.guild || !mail.origMessage) {
                         interaction.reply('Failed to create mail')
                         return
                     }
 
-                    const targetGuild: Guild | null = this.client.guilds.resolve(mail.guild_id || '')
-                    if (!targetGuild) {return}
+                    userMessage = mail.origMessage
+                    if (!userMessage) return
 
-                    await mail.makeInitialThread(targetGuild, interaction.user)
+                    await mail.makeInitialThread(mail.guild, interaction.user)
                     await mail.commit()
                     await mail.relay(userMessage, RelayDirection.Staff)
-
-                    interaction.reply('Your mod-mail has been sent.')
                     break
             }
         }
