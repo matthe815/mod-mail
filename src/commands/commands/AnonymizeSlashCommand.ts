@@ -1,7 +1,6 @@
 import SlashCommandManager from "../SlashCommandManager";
 import SlashCommand from "../SlashCommand";
 import {CommandInteraction} from "discord.js";
-import {RelayDirection} from "../../mail/ModMail";
 
 export default class AnonymizeSlashCommand extends SlashCommand {
     constructor(manager: SlashCommandManager) {

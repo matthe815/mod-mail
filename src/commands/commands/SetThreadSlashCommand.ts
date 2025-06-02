@@ -30,6 +30,6 @@ export default class SetThreadChannelCommand extends SlashCommand {
         settings.setModMailChannel(channel.id)
         settings.commit()
 
-        interaction.reply({ content: `The mod-mail channel has been set to \`${channel.name}\`.`, flags: 64})
+        interaction.reply({ content: `:white_check_mark: The mod-mail channel has been set to \`${channel.name}\`.`, flags: 64})
     }
 }

@@ -58,7 +58,7 @@ export default class ModMail {
             }
         })
 
-        await user.send(`Thank you for your inquiry, your ticket ID is WL-${this.manager.total({ filter: TotalingFilter.All })}. The average response time is ${Utils.formatRelativeTime(await this.manager.getAverageResponseTime(guild.id) * 1000)}.`)
+        await user.send(`Thank you for your inquiry, your ticket ID is ${this.manager.client.settings.get(guild)?.short_code}-${this.manager.total({ filter: TotalingFilter.All })}. The average response time is ${Utils.formatRelativeTime(await this.manager.getAverageResponseTime(guild.id) * 1000)}.`)
         this.setThread(thread)
     }
 

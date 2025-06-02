@@ -21,6 +21,7 @@ import SetThreadChannelCommand from "./commands/commands/SetThreadSlashCommand";
 import BanSlashCommand from "./commands/commands/BanSlashCommand";
 import UnBanSlashCommand from "./commands/commands/UnBanSlashCommand";
 import AnonymizeSlashCommand from "./commands/commands/AnonymizeSlashCommand";
+import FeedbackCommand from "./commands/commands/FeedbackCommand";
 
 export default class ModMailClient extends Client {
     mail: ModMailManager
@@ -44,6 +45,7 @@ export default class ModMailClient extends Client {
         this.commands.add(new BanSlashCommand(this.commands))
         this.commands.add(new UnBanSlashCommand(this.commands))
         this.commands.add(new AnonymizeSlashCommand(this.commands))
+        this.commands.add(new FeedbackCommand(this.commands))
     }
 
     public async onDMReply(message: Message): Promise<void> {

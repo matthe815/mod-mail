@@ -5,6 +5,7 @@ export default class GuildSettings {
     public manager: GuildSettingsManager
     public guild_id: string = ""
     public modmail_channel: string = ""
+    public short_code: string = "WL"
 
     constructor(manager: GuildSettingsManager, data: GuildSettingsData) {
         this.manager = manager
@@ -26,7 +27,7 @@ export default class GuildSettings {
 
     public async commit(): Promise<void> {
         const connection = await this.manager.client.db.getConnection()
-        await connection.execute("INSERT INTO modmail_settings(guild_id, modmail_channel) VALUES(?, ?) ON DUPLICATE KEY UPDATE modmail_channel = VALUES(modmail_channel)", [this.guild_id, this.modmail_channel])
+        await connection.execute("INSERT INTO modmail_settings(guild_id, modmail_channel, short_code) VALUES(?, ?) ON DUPLICATE KEY UPDATE modmail_channel = VALUES(modmail_channel), short_code = VALUES(short_code)", [this.guild_id, this.modmail_channel, this.short_code])
     }
 }
 
