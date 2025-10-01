@@ -19,7 +19,8 @@ test('Must properly set mail values', () => {
         updated_at: new Date().getTime(),
         thread_id: "123",
         user_id: "143",
-        mail_uuid: "132"
+        mail_uuid: "132",
+        anonymous: true
     }
     mail.set(testEntry)
 

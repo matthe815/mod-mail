@@ -7,7 +7,6 @@ import GuildSettings from "../settings/GuildSettings";
 
 export default class ModMailManager {
     client: ModMailClient
-
     private mail: ModMail[]
 
     constructor(client: ModMailClient) {
@@ -61,6 +60,7 @@ export default class ModMailManager {
     }
 
     public async load() {
+        console.log("Loading mail")
         const connection: PoolConnection = await this.client.db.getConnection()
         const mailEntries: ModMailData[] = await connection.query("SELECT * FROM modmail_mail")
 
@@ -68,6 +68,8 @@ export default class ModMailManager {
             const mail: ModMail = new ModMail(this, entry);
             this.mail.push(mail)
         }
+
+        console.log("Mail loaded")
     }
 
     public total(opts: GetTotalingOptions): number {

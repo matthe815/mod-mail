@@ -5,7 +5,7 @@
   "main": "main.ts",
   "scripts": {
     "test": "npx jest",
-    "start": "npx ts-node ./main.ts"
+    "start": "node out/main.js"
   },
   "repository": {
     "type": "git",

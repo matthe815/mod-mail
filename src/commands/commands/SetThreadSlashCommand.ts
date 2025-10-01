@@ -14,7 +14,13 @@ export default class SetThreadChannelCommand extends SlashCommand {
                 .setName("channel")
                 .setDescription("Channel to forward to")
                 .setRequired(true)
-            ).setDefaultMemberPermissions(0x10)
+            )
+            .addBooleanOption(option => option
+                .setName("setup")
+                .setDescription("Overwrite the channel to bot preferred settings")
+                .setRequired(true)
+            )
+            .setDefaultMemberPermissions(0x10)
     }
 
     execute(interaction: CommandInteraction) {
@@ -26,6 +32,11 @@ export default class SetThreadChannelCommand extends SlashCommand {
 
         const options: CommandInteractionOptionResolver = interaction.options
         const channel: ForumChannel = options.getChannel("channel", true, [ChannelType.GuildForum])
+        const setup:   boolean      = options.getBoolean("setup", true)
+
+        if (setup) {
+            channel.setAvailableTags([{ name: "Resolved" }])
+        }
 
         settings.setModMailChannel(channel.id)
         settings.commit()
